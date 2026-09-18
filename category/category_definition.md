@@ -1,0 +1,25 @@
+| Theme | Definition |
+|-------|-----------|
+| Adventure | Games that are based on storylines with a lot of exploration and discovery, as well as puzzle-solving. May be based on well-known stories or franchises. Can be connected to multiple sub-genres such as 'text' and 'graphics'-based. |
+| Arcade | Games that are either coin-operated machines found in restaurants and amusement arcades, or games that are heavily influenced by old, retro arcade titles. The majority of arcade games are based heavily on skills. |
+| Card & Board Game | Games with gameplay similar to physical tabletop games like board and card games, but in digital form. This can range from simple card games that take only a few minutes, to complex titles that require hours of play. In a digital card game, a player creates his own deck of cards before challenging their opponent. |
+| Fighting | Games with a strong emphasis on combat between one or more players. Counter-attack, chain reactions, blocking, and combos are frequently used in hand-to-hand battle. The fighting genre is also related to the beat 'em up genre. |
+| Hack and Slash/ Beat em' up | Games that focus heavily on combat with melee-based weapons, such as swords or blades. May also include guns. Often connected to action-heavy stories. |
+| Indie | Games created by solo developers or tiny studios on a smaller/non-existing budget but with a lot of freedom and creativity. Might not have the support of a game publisher. These games are usually short and can be found on sites such as Itchio and GameJolt. |
+| MOBA | Games that feature gameplay mechanics of the player controlling a single character with unique abilities that contribute to a strategic victory of a larger team. Often competes against other teams on a predefined battlefield. |
+| Music | Games that are heavily influenced by music, that uses gameplay mechanics with tunes to beat a level or a stage. This may include rhythm matching, singing/dancing games or simulators. Games based on music artists/bands may also get the 'Music' genre. |
+| Pinball | Games that feature a digital adaptation of classic pinball arcade machines with gameplay mechanics where the player uses flippers to keep a ball in motion in order to increase a score or progress. Usually inspired by a theme or franchise (such as Star Wars). |
+| Platform | Games with gameplay mechanics of jumping, climbing or flying to navigate the player's environment to reach their goal. Sometimes referred to as a 'platformer' or a 'jump n run' game. |
+| Point-and-Click | Games in which you use a pointer in specific locations on objects to reveal puzzles or items that advance the story. Point-and-click frequently intersects with the 'Adventure' and/or 'Mystery' genre. |
+| Puzzle | Games that feature gameplay mechanics of logic puzzles, mazes or tile-matching. Same goes for word completion and sequence solving. Often connected to the 'Adventure' genre. |
+| Quiz/Trivia | Games where a player has to answer questions correctly about a certain or variety of subjects. The goal is often to collect the most points. |
+| Racing | Games in which fast cars, bikes, or other vehicles fight in a racing competition. Some scenarios may be based on real-world racing leagues, but others may be made up. Racing games are also classified as 'Sport' games. |
+| Real Time Strategy (RTS) | Games where players progress simultaneously with each other in "real-time" as opposed to taking turns. Often connected to construction of buildings and wielding armies in order to dominate a battlefield. |
+| Role-Playing (RPG) | Games where the player takes the role of a character in a fictional setting. The goal is to act out this role within a narrative, often through a process of structured decision-making. |
+| Shooter | Games where the goal is to use weapons in order to clear a level. This could be completed by shooting targets or enemies and the game often tests the player's spatial awareness, reflexes and speed. A shooter is often connected to the 'Action' and/or 'Horror' genre. |
+| Simulator | Games that are designed to create a close as possible simulation to real world activities. Often copies life activities such as training, entertainment or war scenarios. |
+| Sport | Games that simulate the practice of sports. Some games emphasize strategy and management while others emphasize playing the sport itself. May be inspired by real teams and events. |
+| Strategy | Games where the players make uncoerced and autonomous decisions which will have a high significance in determining the outcome. Skillful thinking and planning are important to achieve victory. |
+| Tactical | Games that include scenarios where you have to make decisions based on the current situation and short-term goals. |
+| Turn-based Strategy (TBS) | Games that include taking turns when playing. Often connected to warfare and military tactics, digital board games or historical events. |
+| Visual Novel | Games that act more like interactive fictions with a heavy focus on dialogue. Combines textual narrative with static or animated illustrations. A Visual Novel is also sometimes referred to as a 'Novel Game'. |

@@ -1,0 +1,128 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "Tap-Tap Shots L1 static checks for the TDD public API contract only. Runtime gameplay behavior is covered by checks.js.",
+  "_source": "task/tap-tap-shots/tdd.md",
+  "checks": [
+    {
+      "id": "p0-public-game-test-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,900}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined public test facade as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "TDD public contract exposes reset, getSnapshot, input, and loadScenario",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement all four public methods declared by task/tap-tap-shots/tdd.md."
+    },
+    {
+      "id": "p0-single-index-inline-output",
+      "level": "P0",
+      "name": "Runnable output is a single inline index.html without local runtime companions",
+      "type": "regex_none",
+      "patterns": [
+        "<script\\b[^>]*\\bsrc\\s*=\\s*[\"']\\s*(?:\\./|/|[^\"']*(?:\\.js|\\.mjs))",
+        "<link\\b[^>]*\\brel\\s*=\\s*[\"']stylesheet[\"'][^>]*\\bhref\\s*=\\s*[\"']\\s*(?:\\./|/|[^\"']*\\.css)",
+        "\\b(?:import\\s+[^;]*\\s+from\\s*[\"']\\s*\\./|import\\s*\\(\\s*[\"']\\s*\\./)"
+      ],
+      "fix_hint": "Place all first-party CSS and JavaScript inline in /envarena/workspace/index.html; do not reference local game.js/state.js/render.js/style.css files."
+    },
+    {
+      "id": "p1-action-schema-contract",
+      "level": "P1",
+      "name": "Public input action schema represents tap, timing, panels, settings, and shop actions",
+      "type": "regex_all",
+      "patterns": [
+        "(?:action|input)\\s*\\.[\\s\\S]{0,180}(?:type)|(?:type\\s*[:=][\\s\\S]{0,900}(?:tapPlayfield|tapSequence|wait))",
+        "(?:openPanel|closePanel|pause|resume|retry|home|toggleSound)",
+        "(?:(?:shopCategory|selectShopItem)[\\s\\S]{0,4000}(?:(?:balls|backgrounds)[\\s\\S]{0,4000}(?:equipped|ownedUnequipped|firstAffordableLocked|firstUnaffordableLocked)|(?:equipped|ownedUnequipped|firstAffordableLocked|firstUnaffordableLocked)[\\s\\S]{0,4000}(?:balls|backgrounds))|(?:balls|backgrounds)[\\s\\S]{0,4000}(?:(?:shopCategory|selectShopItem)[\\s\\S]{0,4000}(?:equipped|ownedUnequipped|firstAffordableLocked|firstUnaffordableLocked)|(?:equipped|ownedUnequipped|firstAffordableLocked|firstUnaffordableLocked)[\\s\\S]{0,4000}(?:shopCategory|selectShopItem))|(?:equipped|ownedUnequipped|firstAffordableLocked|firstUnaffordableLocked)[\\s\\S]{0,4000}(?:(?:shopCategory|selectShopItem)[\\s\\S]{0,4000}(?:balls|backgrounds)|(?:balls|backgrounds)[\\s\\S]{0,4000}(?:shopCategory|selectShopItem)))"
+      ],
+      "fix_hint": "Route the TDD-listed player-level actions through window.__gameTest.input(action)."
+    },
+    {
+      "id": "p1-snapshot-state-envelope",
+      "level": "P1",
+      "name": "Snapshot exposes state, blocking, score, timer, playfield, and lastAction envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:phase\\s*[:=]|[\"']phase[\"']\\s*:|\\bphase\\s*[,}])[\\s\\S]{0,900}(?:overlayBlocking\\s*[:=]|[\"']overlayBlocking[\"']\\s*:|\\boverlayBlocking\\s*[,}])[\\s\\S]{0,900}(?:canInteractWithPlayfield\\s*[:=]|[\"']canInteractWithPlayfield[\"']\\s*:|\\bcanInteractWithPlayfield\\s*[,}]))",
+        "(?:(?:score\\s*[:=]|[\"']score[\"']\\s*:|\\bscore\\s*[,}])[\\s\\S]{0,520}(?:bestScore\\s*[:=]|[\"']bestScore[\"']\\s*:|\\bbestScore\\s*[,}])[\\s\\S]{0,520}(?:coins\\s*[:=]|[\"']coins[\"']\\s*:|\\bcoins\\s*[,}]))",
+        "(?:(?:timer\\s*[:=]\\s*\\{|[\"']timer[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:visible|ratio|state|revision)\\s*[:=]|(?:function\\s+(?P<timerBuilder>(?:timer[\\w$]*|[A-Za-z_$][\\w$]*timer[\\w$]*))\\s*\\([^)]*\\)\\s*\\{)[\\s\\S]{0,900}return\\s*\\{[\\s\\S]{0,900}(?:visible|ratio|state|revision)\\s*[:=][\\s\\S]{0,1800}timer\\s*[:=]\\s*(?P=timerBuilder)\\s*\\([^)]*\\))",
+        "(?:playfield\\s*[:=]\\s*\\{|[\"']playfield[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:visible|bounds|visualRevision)\\s*[:=]",
+        "(?:(?:lastAction\\s*[:=]\\s*\\{|[\"']lastAction[\"']\\s*:\\s*\\{)[\\s\\S]{0,520}(?:ok|type|reason)\\s*[:=]|(?:function\\s+[A-Za-z_$][\\w$]*\\s*\\(\\s*(?P<actionArg>[A-Za-z_$][\\w$]*)\\s*\\))[\\s\\S]{0,12000}lastAction\\s*[:=]\\s*(?P=actionArg)\\b[\\s\\S]{0,12000}(?:ok|type|reason)\\s*[:=])"
+      ],
+      "fix_hint": "Return the stable Snapshot envelope declared by the TDD from reset/input/getSnapshot/loadScenario."
+    },
+    {
+      "id": "p1-ball-hoop-feedback-schema",
+      "level": "P1",
+      "name": "Snapshot exposes visible ball, hoop, and feedback summaries for motion, direction, score, and collision",
+      "type": "regex_all",
+      "patterns": [
+        "(?:ball\\s*[:=]\\s*\\{|[\"']ball[\"']\\s*:\\s*\\{)[\\s\\S]{0,1200}(?:screenX|screenY|motionRevision|verticalTrend|horizontalTrend|onFloor)\\s*[:=]",
+        "(?:hoop\\s*[:=]\\s*\\{|[\"']hoop[\"']\\s*:\\s*\\{)[\\s\\S]{0,1200}(?:side|screenX|screenY|openingBounds|revision)\\s*[:=]",
+        "(?:feedback\\s*[:=]\\s*\\{|[\"']feedback[\"']\\s*:\\s*\\{)[\\s\\S]{0,1400}(?:lastTapAccepted|lastScoreDelta|lastShotQuality|heatLevel|lastCollision|warningActive|visibleEffectRevision)\\s*[:=]"
+      ],
+      "fix_hint": "Expose product-level ball, hoop, and feedback summaries without exposing private engine objects."
+    },
+    {
+      "id": "p1-scenario-enum-contract",
+      "level": "P1",
+      "name": "loadScenario supports the legal TDD precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bhome_fresh\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bplaying_right_hoop\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bplaying_left_hoop_after_score\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bapproach_hoop\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bcollision_risk\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\btimed_run_after_score\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bpaused_run\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bresult_with_score\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bshop_with_coins\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bshop_insufficient_coins\\b",
+        "(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*\\bleaderboard_open\\b"
+      ],
+      "fix_hint": "Implement the TDD-listed scenarios only as legal preconditions, not pre-applied outcomes."
+    },
+    {
+      "id": "p1-shop-leaderboard-persistence-schema",
+      "level": "P1",
+      "name": "Snapshot exposes shop, leaderboard, sound, and persistence contract groups",
+      "type": "regex_all",
+      "patterns": [
+        "(?:shop\\s*[:=]\\s*\\{|[\"']shop[\"']\\s*:\\s*\\{)[\\s\\S]{0,1600}(?:category|balance|equippedBall|equippedBackground|itemCounts|lastShopResult)\\s*[:=]",
+        "(?:leaderboard\\s*[:=]\\s*\\{|[\"']leaderboard[\"']\\s*:\\s*\\{)[\\s\\S]{0,700}(?:status\\s*[:=]|[\"']status[\"']\\s*:)",
+        "(?:sound\\s*[:=]\\s*\\{|[\"']sound[\"']\\s*:\\s*\\{)[\\s\\S]{0,420}(?:enabled\\s*[:=]|[\"']enabled[\"']\\s*:)",
+        "(?:persistence\\s*[:=]\\s*\\{|[\"']persistence[\"']\\s*:\\s*\\{)[\\s\\S]{0,420}(?:revision\\s*[:=]|[\"']revision[\"']\\s*:)"
+      ],
+      "fix_hint": "Represent public economy, panel, setting, and persistence summaries from the TDD Snapshot."
+    },
+    {
+      "id": "p1-rejection-envelope-contract",
+      "level": "P1",
+      "name": "Invalid actions and unavailable scenarios return a rejection envelope without unrelated mutation",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:lastAction[A-Za-z_$]*\\s*[:=]|[\"']lastAction[\"']\\s*:|function\\s+[A-Za-z_$]*[Ll]astAction[A-Za-z_$]*\\s*\\([^)]*\\b(?:ok|reason)\\b)[\\s\\S]{0,5000}(?:ok\\s*[:=]|[\"']ok[\"']\\s*:)[\\s\\S]{0,2500}(?:reason\\s*[:=]|[\"']reason[\"']\\s*:))",
+        "(?:notAllowedInPhase|blockedByOverlay|invalidAction|unavailableScenario)",
+        "(?:insufficientFunds|alreadyEquipped|noMatchingItem)"
+      ],
+      "fix_hint": "Reject invalid public actions using the TDD lastAction reason values and preserve unrelated state."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

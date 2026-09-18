@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "tool_checks": [
+    {
+      "id": "p0-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML runtime shell and script are present",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with html, body, and script runtime content.",
+      "required_tags": ["html", "body", "script"]
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline JavaScript parses successfully",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors so the runtime script parses successfully."
+    },
+    {
+      "id": "p0-script-not-empty",
+      "level": "P0",
+      "name": "Runtime script is not an empty shell",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 800,
+      "fix_hint": "Implement substantive playable logic and the public contract instead of an empty shell."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-adapter-methods",
+      "level": "P0",
+      "name": "Public test adapter exposes the required TDD methods",
+      "type": "regex_all",
+      "fix_hint": "Expose window.__gameTest with reset, input, getSnapshot, and loadScenario methods.",
+      "patterns": [
+        "(?:window\\s*\\.\\s*__gameTest|window\\s*\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=",
+        "(?:reset\\s*\\([^)]*\\)|reset\\s*:)\\s*(?:=>|async\\s*\\([^)]*\\)\\s*=>|function|[{])",
+        "(?:getSnapshot\\s*\\([^)]*\\)|getSnapshot\\s*:)(?:\\s*(?:=>|async\\s*\\([^)]*\\)\\s*=>|function|[{])|\\s*[A-Za-z_$][\\w$]*(?=\\s*[,}]))",
+        "(?:input\\s*\\([^)]*\\)|input\\s*:)\\s*(?:=>|async\\s*\\([^)]*\\)\\s*=>|function|[{])",
+        "(?:loadScenario\\s*\\([^)]*\\)|loadScenario\\s*:)\\s*(?:=>|async\\s*\\([^)]*\\)\\s*=>|function|[{])"
+      ]
+    },
+    {
+      "id": "p1-snapshot-state-envelope",
+      "level": "P1",
+      "name": "Snapshot includes TDD state and interaction envelope fields",
+      "type": "regex_all",
+      "fix_hint": "Return a stable snapshot with the TDD state, phase, screen, interaction, and result fields.",
+      "patterns": [
+        "(?:phase\\s*:|['\"]phase['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*phase\\s*=)[\\s\\S]{0,420}(?:mode\\s*:|['\"]mode['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*mode\\s*=)[\\s\\S]{0,420}(?:result\\s*:|['\"]result['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*result\\s*=)",
+        "(?:activePanel\\s*:|['\"]activePanel['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*activePanel\\s*=)[\\s\\S]{0,420}(?:overlayBlocking\\s*:|['\"]overlayBlocking['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*overlayBlocking\\s*=)[\\s\\S]{0,420}(?:canInteractWithPlayfield\\s*:|['\"]canInteractWithPlayfield['\"]\\s*:|[A-Za-z_$][\\w$]*\\s*\\.\\s*canInteractWithPlayfield\\s*=)"
+      ]
+    },
+    {
+      "id": "p1-render-player-hud-world-schema",
+      "level": "P1",
+      "name": "Snapshot groups render player HUD world and helper display summaries",
+      "type": "regex_all",
+      "fix_hint": "Expose public render, player, HUD, world, and helper summaries needed to observe visible state.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:\\brender\\s*[:=,]|['\"]render['\"]\\s*:|\\.[\\t ]*render\\s*=))(?=[\\s\\S]*(?:\\bplayfieldVisible\\s*[:,=]|['\"]playfieldVisible['\"]\\s*:))(?=[\\s\\S]*(?:\\bplayfieldNonBlank\\s*[:,=]|['\"]playfieldNonBlank['\"]\\s*:))(?=[\\s\\S]*(?:\\bplayfieldRevision\\s*[:,=]|['\"]playfieldRevision['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bplayer\\s*[:=,]|['\"]player['\"]\\s*:|\\.[\\t ]*player\\s*=))(?=[\\s\\S]*(?:\\bscreenX\\s*[:,=]|['\"]screenX['\"]\\s*:))(?=[\\s\\S]*(?:\\bscreenY\\s*[:,=]|['\"]screenY['\"]\\s*:))(?=[\\s\\S]*(?:\\bsizeBand\\s*[:,=]|['\"]sizeBand['\"]\\s*:))(?=[\\s\\S]*(?:\\bboosting\\s*[:,=]|['\"]boosting['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bhud\\s*[:=,]|['\"]hud['\"]\\s*:|\\.[\\t ]*hud\\s*=))(?=[\\s\\S]*(?:\\bsurvivalSeconds\\s*[:,=]|['\"]survivalSeconds['\"]\\s*:))(?=[\\s\\S]*(?:\\bkills\\s*[:,=]|['\"]kills['\"]\\s*:))(?=[\\s\\S]*(?:\\bfeedback\\s*[:,=]|['\"]feedback['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bworld\\s*[:=,]|['\"]world['\"]\\s*:|\\.[\\t ]*world\\s*=))(?=[\\s\\S]*(?:\\bentityCounts\\s*[:,=]|['\"]entityCounts['\"]\\s*:))(?=[\\s\\S]*(?:\\bvisibleFood\\s*[:,=]|['\"]visibleFood['\"]\\s*:))(?=[\\s\\S]*(?:\\bvisibleTadpoles\\s*[:,=]|['\"]visibleTadpoles['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bhelperDisplay\\s*[:=,]|['\"]helperDisplay['\"]\\s*:|\\.[\\t ]*helperDisplay\\s*=))(?=[\\s\\S]*(?:\\bleaderboardVisible\\s*[:,=]|['\"]leaderboardVisible['\"]\\s*:))(?=[\\s\\S]*(?:\\bminimapVisible\\s*[:,=]|['\"]minimapVisible['\"]\\s*:))(?=[\\s\\S]*(?:\\bblankVisible\\s*[:,=]|['\"]blankVisible['\"]\\s*:))"
+      ]
+    },
+    {
+      "id": "p1-player-action-schema",
+      "level": "P1",
+      "name": "Public input action schema covers player-level controls",
+      "type": "regex_all",
+      "fix_hint": "Implement the declared player-level action schema through __gameTest.input with semantic fields.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:case\\s*['\"]pressControl['\"]|['\"]pressControl['\"]\\s*:|\\bpressControl\\b))(?=[\\s\\S]*\\bstartEndless\\b)(?=[\\s\\S]*\\bpause\\b)(?=[\\s\\S]*\\bresume\\b)",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]holdDirection['\"]|['\"]holdDirection['\"]\\s*:|\\bholdDirection\\b))(?=[\\s\\S]*\\bleft\\b)(?=[\\s\\S]*\\bright\\b)(?=[\\s\\S]*\\bup\\b)(?=[\\s\\S]*\\bdown\\b)",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]pointTo['\"]|['\"]pointTo['\"]\\s*:|\\bpointTo\\b))(?=[\\s\\S]*(?:\\bscreenX\\b|\\btarget\\b))(?=[\\s\\S]*\\bdurationMs\\b)",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]dragJoystick['\"]|['\"]dragJoystick['\"]\\s*:|\\bdragJoystick\\b))(?=[\\s\\S]*\\bstrength\\b)(?=[\\s\\S]*(?:\\breleaseJoystick\\b|['\"]releaseJoystick['\"]))",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]holdBoost['\"]|['\"]holdBoost['\"]\\s*:|\\bholdBoost\\b))(?=[\\s\\S]*(?:\\breleaseBoost\\b|['\"]releaseBoost['\"]))"
+      ]
+    },
+    {
+      "id": "p1-target-and-scenario-schema",
+      "level": "P1",
+      "name": "Public scenarios and semantic target actions are declared",
+      "type": "regex_all",
+      "fix_hint": "Implement legal scenario names and semantic target actions without bypassing gameplay outcomes.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:loadScenario\\s*\\(|loadScenario\\s*:))(?=[\\s\\S]*(?:endless_start|['\"]endless_start['\"]))(?=[\\s\\S]*(?:boost_ready|['\"]boost_ready['\"]))",
+        "^(?=[\\s\\S]*(?:near_food|['\"]near_food['\"]))(?=[\\s\\S]*(?:near_smaller_tadpole|['\"]near_smaller_tadpole['\"]))(?=[\\s\\S]*(?:near_larger_threat|['\"]near_larger_threat['\"]))",
+        "^(?=[\\s\\S]*(?:near_boundary|['\"]near_boundary['\"]))(?=[\\s\\S]*(?:near_soft_obstacle|['\"]near_soft_obstacle['\"]))(?=[\\s\\S]*(?:near_hard_obstacle|['\"]near_hard_obstacle['\"]))",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]swimToVisibleTarget['\"]|['\"]swimToVisibleTarget['\"]\\s*:|\\bswimToVisibleTarget\\b))(?=[\\s\\S]*\\btargetKind\\b)(?=[\\s\\S]*\\btargetId\\b)"
+      ]
+    },
+    {
+      "id": "p1-action-result-rejection-envelope",
+      "level": "P1",
+      "name": "Invalid public actions return a rejection envelope rather than throwing",
+      "type": "regex_all",
+      "fix_hint": "Reject invalid actions with a stable ok=false/reason envelope or an observable no-op.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:lastAction\\s*:|['\"]lastAction['\"]\\s*:|\\.lastAction\\s*=))(?=[\\s\\S]*(?:ok\\s*[:=]|['\"]ok['\"]\\s*:|\\bok\\b(?=\\s*[,}])))(?=[\\s\\S]*(?:reason\\s*[:=]|['\"]reason['\"]\\s*:|\\breason\\b(?=\\s*[,}])))",
+        "(?:invalid_phase|['\"]invalid_phase['\"])[\\s\\S]{0,520}(?:locked_level|['\"]locked_level['\"]|target_missing|['\"]target_missing['\"]|unknown_action|['\"]unknown_action['\"])",
+        "(?:unsupported_optional_feature|['\"]unsupported_optional_feature['\"]|too_small|['\"]too_small['\"]|no_direction|['\"]no_direction['\"]|already_terminal|['\"]already_terminal['\"])"
+      ]
+    },
+    {
+      "id": "p2-growth-and-events-contract",
+      "level": "P2",
+      "name": "Optional growth levels and event pressure use public contract fields",
+      "type": "regex_all",
+      "fix_hint": "Expose public contract fields for optional growth levels and event-pressure behavior when implemented.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:\\blevel\\s*[:=]|['\"]level['\"]\\s*:|\\.level\\s*=))(?=[\\s\\S]*(?:\\bavailableCount\\s*[:=]|['\"]availableCount['\"]\\s*:))(?=[\\s\\S]*(?:\\bunlocked\\s*[:=]|['\"]unlocked['\"]\\s*:))(?=[\\s\\S]*(?:\\bobjectiveProgress\\s*[:=]|['\"]objectiveProgress['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:case\\s*['\"]selectLevel['\"]|['\"]selectLevel['\"]\\s*:|\\bselectLevel\\b))(?=[\\s\\S]*\\blevelIndex\\b)(?=[\\s\\S]*(?:\\bretryLevel\\b|\\bnextLevel\\b))",
+        "^(?=[\\s\\S]*(?:\\bevents\\s*[:=]|['\"]events['\"]\\s*:|\\.events\\s*=))(?=[\\s\\S]*\\bseason\\b)(?=[\\s\\S]*(?:\\bfogActive\\b|\\bpressureVisible\\b))"
+      ]
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "p0-no-direct-outcome-cheat-api",
+      "level": "P0",
+      "name": "No public API directly sets rewards, death, completion, or growth outcomes",
+      "type": "regex_none",
+      "fix_hint": "Do not expose direct reward, death, completion, or growth setters; require normal player actions and legal scenarios.",
+      "patterns": [
+        "(?:window\\s*\\.\\s*__gameTest|window\\s*\\[\\s*['\"]__gameTest['\"]\\s*\\])[\\s\\S]{0,2600}(?:setSize|setKills|setDeath|forceDeath|completeLevel|awardFood|awardKill|teleportToTarget)\\s*[:=]",
+        "window\\s*\\.\\s*(?:setSize|setKills|setDeath|forceDeath|completeLevel|awardFood|awardKill|teleportToTarget)\\s*="
+      ]
+    }
+  ]
+}

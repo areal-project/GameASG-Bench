@@ -1,0 +1,127 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "spider-kid-s-halloween-haul",
+  "_source": "task/spider-kid-s-halloween-haul/tdd.md",
+  "_scope": "L1 checks only the TDD-defined public API contract. Gameplay behavior is tested by checks.js.",
+  "tool_checks": [
+    {
+      "id": "p0-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML document has executable runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with html, body, and script tags for the game runtime.",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ]
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix inline and local JavaScript syntax errors so the runtime can load."
+    },
+    {
+      "id": "p0-script-not-empty",
+      "level": "P0",
+      "name": "Runtime script is not an empty facade",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 500,
+      "fix_hint": "Implement substantive playable game logic and the public test contract instead of an empty script facade."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*[^;]{0,400}\\b(?:window|globalThis|self)\\b[^;]{0,400};[\\s\\S]{0,400}\\b\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined public test facade as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "TDD public contract exposes reset, input, getSnapshot, and loadScenario",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement the four public methods declared in the TDD facade."
+    },
+    {
+      "id": "p1-action-envelope-schema",
+      "level": "P1",
+      "name": "Player-level action contract includes web, menu, mode, pause, and rejection envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:action|input)\\s*\\.[\\s\\S]{0,160}(?:type|control|target|mode)|\\b(?:[A-Za-z_$][\\w$]*(?:Action|Input)|input)\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*\\)[\\s\\S]{0,240}\\b[A-Za-z_$][\\w$]*\\s*\\.\\s*(?:type|control|target|mode)|(?:type\\s*[:=][\\s\\S]{0,700}(?:press|release|hold|wait))",
+        "(?:chooseMenu|chooseMode|pause|resume|restart|returnTitle|tutorialContinue)",
+        "(?:lastAction\\s*[:=]\\s*\\{|[\"']lastAction[\"']\\s*:\\s*\\{|(?:lastAction|lastActionResult|_lastAction|[A-Za-z_$][\\w$]*\\.(?:lastAction|lastActionResult))\\s*[:=])[\\s\\S]{0,700}(?:ok|accepted|reason)\\s*[:=]|(?:ok|accepted|reason)\\s*[:=][\\s\\S]{0,700}(?:lastAction|lastActionResult|_lastAction|[A-Za-z_$][\\w$]*\\.(?:lastAction|lastActionResult))"
+      ],
+      "fix_hint": "Represent player-level actions and rejected/no-op results using the TDD action and lastAction schema."
+    },
+    {
+      "id": "p1-snapshot-state-schema",
+      "level": "P1",
+      "name": "Snapshot exposes state, interaction, HUD, and terminal summary fields",
+      "type": "regex_all",
+      "patterns": [
+        "(?:phase\\s*[:=]|[\"']phase[\"']\\s*:)[\\s\\S]{0,700}(?:mode\\s*[:=]|[\"']mode[\"']\\s*:)[\\s\\S]{0,700}(?:result\\s*[:=]|[\"']result[\"']\\s*:)",
+        "(?:overlayBlocking\\s*[:=]|[\"']overlayBlocking[\"']\\s*:)",
+        "(?:canInteractWithPlayfield\\s*[:=]|[\"']canInteractWithPlayfield[\"']\\s*:)",
+        "(?:hud\\s*[:=]\\s*\\{|[\"']hud[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:score|collectedCount|progress|timerMs|distance|resultSummaryVisible)\\s*[:=]"
+      ],
+      "fix_hint": "Return stable top-level state, interaction, and HUD summaries from getSnapshot/reset/input/loadScenario."
+    },
+    {
+      "id": "p1-web-player-world-schema",
+      "level": "P1",
+      "name": "Snapshot exposes public player, web, anchor, collectible, and world observability",
+      "type": "regex_all",
+      "patterns": [
+        "(?:player\\s*[:=]\\s*\\{|[\"']player[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:state|screenX|screenY|worldProgress|speedX|speedY|visible)\\s*[:=]",
+        "(?:web\\s*[:=]\\s*\\{|[\"']web[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:state|visible|anchorAhead|anchorScreenX|connectionRevision)\\s*[:=]",
+        "(?:(?:anchors\\s*[:=]\\s*\\{|[\"']anchors[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:visibleCount|reachableForwardCount|nearestReachable|revision)\\s*[:=]|(?=[\\s\\S]*(?:\\banchors\\s*:\\s*|[\"']anchors[\"']\\s*:\\s*)(?P<anchorSummary>[A-Za-z_$][\\w$]*)(?:\\s*\\([^)]*\\))?\\s*[,}])(?=[\\s\\S]*\\b(?P=anchorSummary)\\s*(?:=|\\()[\\s\\S]{0,1800}(?:visibleCount|reachableForwardCount|nearestReachable|revision)\\s*[:=])|(?:\\banchors\\s*:\\s*|[\"']anchors[\"']\\s*:\\s*)[^{};]{0,240}\\?\\s*\\{[\\s\\S]{0,900}(?:visibleCount|reachableForwardCount|nearestReachable|revision)\\s*[:=])",
+        "(?:(?:collectibles\\s*[:=]\\s*\\{|[\"']collectibles[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:visibleCount|nearest|collectedCount|revision)\\s*[:=]|(?=[\\s\\S]*(?:\\bcollectibles\\s*:\\s*|[\"']collectibles[\"']\\s*:\\s*)(?P<collectibleSummary>[A-Za-z_$][\\w$]*)(?:\\s*\\([^)]*\\))?\\s*[,}])(?=[\\s\\S]*\\b(?P=collectibleSummary)\\s*(?:=|\\()[\\s\\S]{0,1800}(?:visibleCount|nearest|collectedCount|revision)\\s*[:=])|(?:\\bcollectibles\\s*:\\s*|[\"']collectibles[\"']\\s*:\\s*)[^{};]{0,240}\\?\\s*\\{[\\s\\S]{0,900}(?:visibleCount|nearest|collectedCount|revision)\\s*[:=])",
+        "(?:(?:world\\s*[:=]\\s*\\{|[\"']world[\"']\\s*:\\s*\\{)[\\s\\S]{0,900}(?:playfieldReady|playfieldBounds|renderRevision|environmentMotionRevision)\\s*[:=]|(?=[\\s\\S]*(?:\\bworld\\s*:\\s*|[\"']world[\"']\\s*:\\s*)(?P<worldSummary>[A-Za-z_$][\\w$]*)(?:\\s*\\([^)]*\\))?\\s*[,}])(?=[\\s\\S]*\\b(?P=worldSummary)\\s*(?:=|\\()[\\s\\S]{0,1800}(?:playfieldReady|playfieldBounds|renderRevision|environmentMotionRevision)\\s*[:=])|(?:\\bworld\\s*:\\s*|[\"']world[\"']\\s*:\\s*)[^{};]{0,240}\\?\\s*\\{[\\s\\S]{0,900}(?:playfieldReady|playfieldBounds|renderRevision|environmentMotionRevision)\\s*[:=])"
+      ],
+      "fix_hint": "Expose the TDD public observability summaries needed for player-visible web swing tests."
+    },
+    {
+      "id": "p1-scenario-contract-enum",
+      "level": "P1",
+      "name": "loadScenario supports declared legal setup states",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*\\btitle\\b)(?=[\\s\\S]*\\bmode_select\\b)(?=[\\s\\S]*\\bcandy_start\\b)(?=[\\s\\S]*\\bendless_start\\b)(?=[\\s\\S]*\\brace_start\\b)(?=[\\s\\S]*\\breachable_anchor\\b)(?=[\\s\\S]*\\bno_reachable_anchor\\b)(?=[\\s\\S]*\\battached_swing\\b)(?=[\\s\\S]*\\bcollectible_route\\b)(?=[\\s\\S]*\\bnear_goal_before_finish\\b)(?=[\\s\\S]*\\blow_fall_risk\\b)(?=[\\s\\S]*\\brace_midcourse\\b)(?=[\\s\\S]*\\brace_fall_risk\\b)(?=[\\s\\S]*\\btutorial_start\\b)(?=[\\s\\S]*\\bpaused_play\\b)"
+      ],
+      "fix_hint": "Implement only the TDD-listed loadScenario names as legal preconditions, not preloaded outcomes."
+    },
+    {
+      "id": "p1-race-tutorial-contract-schema",
+      "level": "P1",
+      "name": "Race and tutorial optional objects expose their public contract fields",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\b[A-Za-z_$]*[Rr]ace[\\w$]*\\b|[\"']race[\"'])\\s*[:=(])(?=[\\s\\S]{0,1800}(?:[\"']?timerMs[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?playerProgress[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?opponentProgress[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?(?:opponentVisible|opponentDirection)[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?rescueState[\"']?\\s*(?:[:=]|[,}])))",
+        "(?:(?:\\btut[\\w$]*\\b|\\b[A-Za-z_$]*[Tt]utorial[\\w$]*\\b|[\"']tutorial[\"'])\\s*[:=(])(?=[\\s\\S]{0,1800}(?:[\"']?step[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?waitingFor[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?promptVisible[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?practiceResetCount[\"']?\\s*(?:[:=]|[,}])))(?=[\\s\\S]{0,1800}(?:[\"']?completed[\"']?\\s*(?:[:=]|[,}])))"
+      ],
+      "fix_hint": "When race/tutorial modes are active, expose the TDD race and tutorial summary objects."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

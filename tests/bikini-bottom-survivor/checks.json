@@ -1,0 +1,70 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "bikini-bottom-survivor",
+  "_source": "task/bikini-bottom-survivor/tdd.md",
+  "_scope": "L1 checks only TDD-defined public interface functions. Gameplay behavior is tested by L2 checks.js.",
+  "_contract_methods": [
+    "reset",
+    "input",
+    "getSnapshot",
+    "loadScenario"
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[[\"\\']__gameTest[\"\\']\\])\\s*="
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-contract-method-reset",
+      "level": "P0",
+      "name": "TDD contract method reset is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\breset\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.reset as defined by task/bikini-bottom-survivor/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-input",
+      "level": "P0",
+      "name": "TDD contract method input is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\binput\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.input as defined by task/bikini-bottom-survivor/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-getSnapshot",
+      "level": "P0",
+      "name": "TDD contract method getSnapshot is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\bgetSnapshot\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.getSnapshot as defined by task/bikini-bottom-survivor/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-loadScenario",
+      "level": "P0",
+      "name": "TDD contract method loadScenario is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\bloadScenario\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.loadScenario as defined by task/bikini-bottom-survivor/tdd.md."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

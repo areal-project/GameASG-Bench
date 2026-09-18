@@ -1,0 +1,67 @@
+{
+  "version": "2.0-public-contract",
+  "checks": [
+    {
+      "id": "l1-window-game-test-object",
+      "level": "P0",
+      "name": "TDD public interface exposes window.__gameTest object",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "(?:(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*[^;]*\\b(?:window|globalThis|self)\\b[^;]*;[\\s\\S]*?\\b\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=)"
+      ],
+      "fix_hint": "Expose the TDD public test interface as window.__gameTest."
+    },
+    {
+      "id": "l1-window-game-test-reset",
+      "level": "P0",
+      "name": "window.__gameTest.reset(options?) exists",
+      "type": "regex_any",
+      "patterns": [
+        "\\breset\\s*[:=]\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[^,;{}]+=>)",
+        "\\breset\\s*\\([^)]*\\)\\s*\\{",
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=\\s*\\{[\\s\\S]*?[\"']?reset[\"']?\\s*:\\s*[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*[,}]"
+      ],
+      "fix_hint": "Implement window.__gameTest.reset(options?) as declared in the TDD."
+    },
+    {
+      "id": "l1-window-game-test-input",
+      "level": "P0",
+      "name": "window.__gameTest.input(action) exists",
+      "type": "regex_any",
+      "patterns": [
+        "\\binput\\s*[:=]\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[^,;{}]+=>)",
+        "\\binput\\s*\\([^)]*\\)\\s*\\{",
+        "(?s)\\A(?=.*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=\\s*\\{.*?\\binput\\s*:\\s*(?P<game_input>[A-Za-z_$][\\w$]*)\\b)(?=.*(?:function\\s+(?P=game_input)\\s*\\(|(?:var|let|const)\\s+(?P=game_input)\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\s*=>)))"
+      ],
+      "fix_hint": "Implement window.__gameTest.input(action) as declared in the TDD."
+    },
+    {
+      "id": "l1-window-game-test-get-snapshot",
+      "level": "P0",
+      "name": "window.__gameTest.getSnapshot() exists",
+      "type": "regex_any",
+      "patterns": [
+        "\\bgetSnapshot\\s*[:=]\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[^,;{}]+=>)",
+        "\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{",
+        "\\bgetSnapshot\\s*:\\s*(?!(?:null|undefined|true|false)\\b)[A-Za-z_$][\\w$]*\\s*(?=[,}])"
+      ],
+      "fix_hint": "Implement window.__gameTest.getSnapshot() as declared in the TDD."
+    },
+    {
+      "id": "l1-window-game-test-load-scenario",
+      "level": "P0",
+      "name": "window.__gameTest.loadScenario(name, options?) exists",
+      "type": "regex_any",
+      "patterns": [
+        "\\bloadScenario\\s*[:=]\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[^,;{}]+=>)",
+        "\\bloadScenario\\s*\\([^)]*\\)\\s*\\{",
+        "(?s)(?=.*\\bloadScenario\\s*[:=]\\s*([A-Za-z_$][\\w$]*)\\b)(?=.*\\bfunction\\s+\\1\\s*\\([^)]*\\)\\s*\\{)",
+        "(?s)(?=.*\\bloadScenario\\s*[:=]\\s*([A-Za-z_$][\\w$]*)\\b)(?=.*\\b(?:const|let|var)\\s+\\1\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\s*=>))"
+      ],
+      "fix_hint": "Implement window.__gameTest.loadScenario(name, options?) as declared in the TDD."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

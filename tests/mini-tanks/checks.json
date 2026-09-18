@@ -1,0 +1,125 @@
+{
+  "_doc": "Mini Tanks L1 public contract checks",
+  "tool_checks": [
+    {
+      "id": "tool-html-script",
+      "level": "P0",
+      "name": "HTML entry exposes script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "script"
+      ],
+      "fix_hint": "Provide a playable HTML entry with JavaScript."
+    },
+    {
+      "id": "tool-js-syntax",
+      "level": "P0",
+      "name": "JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix syntax errors in inline or linked JavaScript."
+    },
+    {
+      "id": "tool-script-not-empty",
+      "level": "P0",
+      "name": "Playable script is substantive",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 1200,
+      "fix_hint": "Implement the public game contract in script, not a static shell."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-envelope",
+      "level": "P0",
+      "name": "window.__gameTest exposes required public methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose window.__gameTest with reset, input, getSnapshot, and loadScenario as public methods."
+    },
+    {
+      "id": "p0-snapshot-schema-fields",
+      "level": "P0",
+      "name": "Snapshot contract returns state envelope fields",
+      "type": "regex_all",
+      "patterns": [
+        "(schemaVersion\\s*:\\s*1|[\"']schemaVersion[\"']\\s*:\\s*1)[\\s\\S]{0,1800}([\"']screen[\"']\\s*:|screen\\s*:)[\\s\\S]{0,1800}([\"']phase[\"']\\s*:|phase\\s*:)[\\s\\S]{0,1800}([\"']mode[\"']\\s*:|mode\\s*:)",
+        "(?:([\"']controls[\"']\\s*:|controls\\s*:)[\\s\\S]{0,1600}(startSingle\\s*:|[\"']startSingle[\"']\\s*:)[\\s\\S]{0,1200}(fire\\s*:|[\"']fire[\"']\\s*:)[\\s\\S]{0,1200}(moveLeft\\s*:|[\"']moveLeft[\"']\\s*:)[\\s\\S]{0,1200}(moveRight\\s*:|[\"']moveRight[\"']\\s*:)|function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Cc]ontrol|[Ss]napshot)[A-Za-z_$\\w]*\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,2400}(startSingle\\s*:|[\"']startSingle[\"']\\s*:)[\\s\\S]{0,1200}(fire\\s*:|[\"']fire[\"']\\s*:)[\\s\\S]{0,1200}(moveLeft\\s*:|[\"']moveLeft[\"']\\s*:)[\\s\\S]{0,1200}(moveRight\\s*:|[\"']moveRight[\"']\\s*:))",
+        "(?:([\"']visible[\"']\\s*:|visible\\s*:)[\\s\\S]{0,1600}(playfieldReady\\s*:|[\"']playfieldReady[\"']\\s*:)[\\s\\S]{0,1200}(playfieldBounds\\s*:|[\"']playfieldBounds[\"']\\s*:)[\\s\\S]{0,1200}(tankCount\\s*[:,}]|[\"']tankCount[\"']\\s*:)|function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Vv]isible|[Ss]napshot)[A-Za-z_$\\w]*\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,2400}(playfieldReady\\s*:|[\"']playfieldReady[\"']\\s*:)[\\s\\S]{0,1200}(playfieldBounds\\s*:|[\"']playfieldBounds[\"']\\s*:)[\\s\\S]{0,1200}(tankCount\\s*[:,}]|[\"']tankCount[\"']\\s*:))"
+      ],
+      "fix_hint": "Return the TDD Snapshot envelope with schemaVersion, screen, phase, mode, controls, and visible summaries."
+    },
+    {
+      "id": "p1-action-schema-dispatch",
+      "level": "P1",
+      "name": "Public input dispatch recognizes player-level action schema",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\binput\\s*(?:(?:[:=]\\s*(?:async\\s*)?(?:function\\s*)?(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*(?:=>|\\{))|\\([^)]*\\)\\s*\\{))|(?:\\bfunction\\s+[A-Za-z_$][\\w$]*(?:Input|Action)\\s*\\([^)]*\\)\\s*\\{)|(?:\\b[A-Za-z_$][\\w$]*(?:Input|Action)\\s*[:=]\\s*(?:async\\s*)?(?:function\\s*)?(?:\\([^)]*\\)|[A-Za-z_$][\\w$]*)\\s*(?:=>|\\{)))[\\s\\S]{0,5000}(?:\\b[A-Za-z_$][\\w$]*\\s*\\.\\s*type\\b|\\b[A-Za-z_$][\\w$]*\\s*\\[['\"]type['\"]\\])",
+        "(?=[\\s\\S]*(?:case\\s*['\"]startMode['\"]|['\"]startMode['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]startMode['\"]))(?=[\\s\\S]*(?:case\\s*['\"]adjustAngle['\"]|['\"]adjustAngle['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]adjustAngle['\"]))(?=[\\s\\S]*(?:case\\s*['\"]adjustPower['\"]|['\"]adjustPower['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]adjustPower['\"]))",
+        "(?=[\\s\\S]*(?:case\\s*['\"]move['\"]|['\"]move['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]move['\"]))(?=[\\s\\S]*(?:case\\s*['\"]fire['\"]|['\"]fire['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]fire['\"]))(?=[\\s\\S]*(?:case\\s*['\"]waitForSettled['\"]|['\"]waitForSettled['\"]\\s*:|(?:if|else\\s+if)\\s*\\([^)]*\\btype\\b[^)]*(?:===|!==|==|!=|=)\\s*['\"]waitForSettled['\"]))"
+      ],
+      "fix_hint": "Implement __gameTest.input(action) as a player-level action dispatcher for startMode, aim, power, move, fire, and waitForSettled."
+    },
+    {
+      "id": "p1-scenario-loader-contract",
+      "level": "P1",
+      "name": "Scenario loader exposes legal TDD setup states",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:loadScenario\\s*[:=]\\s*(?:async\\s*)?(?:function\\s*\\([^)]*name|\\([^)]*name[^)]*\\)\\s*=>)|loadScenario\\s*\\([^)]*name[^)]*\\)\\s*\\{|function\\s+(?:loadScenario|[A-Za-z_$][\\w$]*loadScenario)[A-Za-z_$]*\\s*\\([^)]*name)[\\s\\S]{0,3000}(?:name\\s*===\\s*['\"]practice_aiming_ready['\"]|case\\s*['\"]practice_aiming_ready['\"])|(?:name\\s*===\\s*['\"]practice_aiming_ready['\"]|case\\s*['\"]practice_aiming_ready['\"])[\\s\\S]{0,3000}(?:loadScenario\\s*[:=]\\s*(?:async\\s*)?(?:function\\s*\\([^)]*name|\\([^)]*name[^)]*\\)\\s*=>)|loadScenario\\s*\\([^)]*name[^)]*\\)\\s*\\{|function\\s+(?:loadScenario|[A-Za-z_$][\\w$]*loadScenario)[A-Za-z_$]*\\s*\\([^)]*name))",
+        "(name\\s*===\\s*['\"]single_player_aiming_ready['\"]|case\\s*['\"]single_player_aiming_ready['\"])[\\s\\S]{0,2400}(name\\s*===\\s*['\"]post_fire_lock_window['\"]|case\\s*['\"]post_fire_lock_window['\"])",
+        "(name\\s*===\\s*['\"]player_no_moves_remaining['\"]|case\\s*['\"]player_no_moves_remaining['\"]|name\\s*===\\s*['\"]player_near_left_boundary['\"]|case\\s*['\"]player_near_left_boundary['\"])"
+      ],
+      "fix_hint": "Support TDD loadScenario names as legal preconditions; do not preload scoring or terminal outcomes."
+    },
+    {
+      "id": "p1-aim-movement-projectile-summary",
+      "level": "P1",
+      "name": "Snapshot includes observable aim, movement, tank, projectile, terrain, and effect summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(([\"']aim[\"']\\s*:|\\baim\\s*:))[\\s\\S]{0,1800}(?:angle\\s*:|[\"']angle[\"']\\s*:)[\\s\\S]{0,1200}(?:power\\s*:|[\"']power[\"']\\s*:)[\\s\\S]{0,1200}(?:previewRevision\\s*:|[\"']previewRevision[\"']\\s*:)|function\\s+[A-Za-z_$][\\w$]*(?:[Aa]im|[Ss]napshot)[A-Za-z_$\\w]*\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,2200}(?:angle\\s*:|[\"']angle[\"']\\s*:)[\\s\\S]{0,1200}(?:power\\s*:|[\"']power[\"']\\s*:)[\\s\\S]{0,1200}(?:previewRevision\\s*:|[\"']previewRevision[\"']\\s*:))",
+        "(?:([\"']movement[\"']\\s*:|movement\\s*:)[\\s\\S]{0,1600}(remaining\\s*:|[\"']remaining[\"']\\s*:)[\\s\\S]{0,1200}(blockedReason\\s*:|[\"']blockedReason[\"']\\s*:)|function\\s+[A-Za-z_$][\\w$]*(?:[Mm]ovement|[Mm]ove)[A-Za-z_$\\w]*\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,1800}(remaining\\s*:|[\"']remaining[\"']\\s*:)[\\s\\S]{0,1200}(blockedReason\\s*:|[\"']blockedReason[\"']\\s*:))",
+        "(?:([\"']projectile[\"']\\s*:|projectile\\s*:)[\\s\\S]{0,1800}(lastPathSample\\s*:|[\"']lastPathSample[\"']\\s*:)[\\s\\S]{0,1200}(lastHorizontalDirection\\s*:|[\"']lastHorizontalDirection[\"']\\s*:)|function\\s+[A-Za-z_$][\\w$]*(?:[Pp]rojectile|[Ss]napshot)[A-Za-z_$\\w]*\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,2200}(lastPathSample\\s*:|[\"']lastPathSample[\"']\\s*:)[\\s\\S]{0,1200}(lastHorizontalDirection\\s*:|[\"']lastHorizontalDirection[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:[\"']terrain[\"']\\s*:|\\bterrain\\s*:|function\\s+[A-Za-z_$][\\w$]*[Tt]errain[A-Za-z_$\\w]*\\s*\\([^)]*\\))[\\s\\S]{0,1800}(?:[\"']revision[\"']\\s*:|\\brevision\\s*:))(?=[\\s\\S]*(?:[\"']effects[\"']\\s*:|\\beffects\\s*:|function\\s+[A-Za-z_$][\\w$]*[Ee]ffect[A-Za-z_$\\w]*\\s*\\([^)]*\\))[\\s\\S]{0,1800}(?:[\"']explosionRevision[\"']\\s*:|\\bexplosionRevision\\s*:))",
+        "(?=[\\s\\S]*(?:[\"']tanks[\"']\\s*:|\\btanks\\s*:)[\\s\\S]{0,1800}(?:[\"']player[\"']\\s*:|\\bplayer\\s*:)[\\s\\S]{0,1200}(?:[\"']opponent[\"']\\s*:|\\bopponent\\s*:))"
+      ],
+      "fix_hint": "Expose product-level summaries for aim, movement, projectile path, terrain revision, and effect revisions."
+    },
+    {
+      "id": "p2-invalid-action-rejection-envelope",
+      "level": "P2",
+      "name": "Invalid action paths expose rejection or stable no-op result",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:[A-Za-z_$][\\w$]*\\.)?lastAction\\s*(?:[:=]|\\.[A-Za-z_$][\\w$]*\\s*=)|[\"']lastAction[\"']\\s*:)[\\s\\S]{0,1200}(?:ok\\s*(?::|=)|[\"']ok[\"']\\s*:|\\bok\\s*[,}])[\\s\\S]{0,1200}(?:reason\\s*(?::|=)|[\"']reason[\"']\\s*:|\\.reason\\s*=|\\breason\\s*[,}])",
+        "(?:(?:ok\\s*[:=]\\s*false\\b)|(?:\\b(?:reject|fail|respond|recordAction|setAction|actionResult)\\s*\\([^;\\n]{0,300}\\bfalse\\b)|(?:return\\s+[^;\\n]*lastAction[\\s\\S]{0,500}\\bfalse\\b))",
+        "(?:(?:blockedReason|moveBlockedReason)\\s*[:=]\\s*(?:['\"](boundary|noMoves|restricted|notAllowed)['\"]|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|(?:[\"']blockedReason[\"']\\s*:\\s*[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|(?:\\b(?:blocked|moveBlocked|reason)\\s*[:=]\\s*['\"](boundary|noMoves|restricted|notAllowed)['\"])|(?:\\b(?:return|fail|reject|respond)\\s*[^;\\n]{0,300}['\"](boundary|noMoves|restricted|notAllowed)['\"]))"
+      ],
+      "fix_hint": "Reject invalid actions with lastAction.ok=false or unchanged state, and expose movement blockedReason values."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "anti-direct-result-cheat",
+      "level": "P1",
+      "name": "No direct score/result cheat API in public contract",
+      "type": "regex_none",
+      "patterns": [
+        "window\\.__gameTest\\s*=\\s*\\{[\\s\\S]{0,3500}(scorePoint|forceWin|forceLose|forceGameOver|setScore|setWinner|setResult|instantWin|directHit)\\s*[:=]",
+        "loadScenario\\s*[:=][\\s\\S]{0,2500}['\"](direct_hit|enemy_dead|score_awarded|terrain_destroyed|instant_win|instant_lose|free_reward|force_game_over)['\"]"
+      ],
+      "fix_hint": "Do not expose direct scoring, direct hit, or instant result shortcuts; use legal scenario preconditions plus player-level actions."
+    }
+  ]
+}

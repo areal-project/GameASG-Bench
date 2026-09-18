@@ -1,0 +1,167 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "Smash the Dummy L1 public TDD contract checks",
+  "_source": "task/smash-the-dummy/tdd.md",
+  "_scope": "L1 only checks the TDD-defined public __gameTest contract, legal scenarios/actions, snapshot envelope, and rejection surfaces. Gameplay behavior, source structure, and implementation internals are covered by checks.js.",
+  "_contract_methods": [
+    "reset",
+    "loadScenario",
+    "input",
+    "getSnapshot"
+  ],
+  "tool_checks": [
+    {
+      "id": "p0-html-entry-and-script",
+      "level": "P0",
+      "name": "HTML entry exposes script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "script"
+      ],
+      "fix_hint": "Provide a browser HTML entry with script content for the game and public contract."
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors before runtime behavior can be evaluated."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,1200}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "reset/loadScenario/input/getSnapshot methods are public",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement reset, loadScenario, input, and getSnapshot as public methods on window.__gameTest."
+    },
+    {
+      "id": "p1-snapshot-state-render-envelope",
+      "level": "P1",
+      "name": "Snapshot returns state, screen, render, and playfield envelope",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bphase\\s*(?::|=)|[\"']phase[\"']\\s*:|\\bphase(?=\\s*[,}]))",
+        "(?:\\bscreen\\s*(?::|=)|[\"']screen[\"']\\s*:|\\bscreen(?=\\s*[,}]))",
+        "(?:\\bnonBlank\\s*(?::|=)|[\"']nonBlank[\"']\\s*:|\\bnonBlank(?=\\s*[,}]))",
+        "(?:\\breadable3DScene\\s*(?::|=)|[\"']readable3DScene[\"']\\s*:|\\breadable3DScene(?=\\s*[,}]))",
+        "(?:\\boverlayBlocking\\s*(?::|=)|[\"']overlayBlocking[\"']\\s*:|\\boverlayBlocking(?=\\s*[,}]))",
+        "(?:\\bcanInteractWithPlayfield\\s*(?::|=)|[\"']canInteractWithPlayfield[\"']\\s*:|\\bcanInteractWithPlayfield(?=\\s*[,}]))"
+      ],
+      "fix_hint": "Return the TDD Snapshot state/render/playfield envelope needed for observable runtime checks."
+    },
+    {
+      "id": "p1-snapshot-gameplay-summary-groups",
+      "level": "P1",
+      "name": "Snapshot exposes dummy, hazards, health, progress, and result summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bdummy\\s*:\\s*\\{|[\"']dummy[\"']\\s*:\\s*\\{)[\\s\\S]{0,3200}(?:\\bcenter\\s*:|[\"']center[\"']\\s*:)|\\bcenter\\s*(?::|[,}])",
+        "(?:\\bhazards\\s*(?::|[,}])|[\"']hazards[\"']\\s*:)",
+        "(?:\\bhealth\\s*:\\s*\\{|[\"']health[\"']\\s*:\\s*\\{)[\\s\\S]{0,2200}(?:\\bratio\\s*:|[\"']ratio[\"']\\s*:)|\\bratio\\s*(?::|[,}])",
+        "(?:\\bprogress\\s*:\\s*\\{|[\"']progress[\"']\\s*:\\s*\\{)[\\s\\S]{0,3200}(?:\\bunlockedLevelIndexes\\s*:|[\"']unlockedLevelIndexes[\"']\\s*:)|\\bunlockedLevelIndexes\\s*(?::|[,}])",
+        "(?:\\bresult\\s*:\\s*\\{|[\"']result[\"']\\s*:\\s*\\{)[\\s\\S]{0,2200}(?:\\bcompletionRevision\\s*:|[\"']completionRevision[\"']\\s*:)|\\bcompletionRevision\\s*(?::|[,}])"
+      ],
+      "fix_hint": "Return the TDD Snapshot gameplay summaries for dummy, hazards, health, progress, and result."
+    },
+    {
+      "id": "p1-action-envelope-declared-player-actions",
+      "level": "P1",
+      "name": "input(action) handles declared player-level actions",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\b[A-Za-z_$][\\w$]*\\s*\\.\\s*type\\b|\\b[A-Za-z_$][\\w$]*\\s*\\[\\s*[\"']type[\"']\\s*\\]|\\bswitch\\s*\\(\\s*[^)]*\\.\\s*type\\s*\\))",
+        "(?:case\\s*[\"']start[\"']|type\\s*===\\s*[\"']start[\"']|[\"']start[\"']\\s*:)",
+        "(?:case\\s*[\"']drag[\"']|type\\s*===\\s*[\"']drag[\"']|[\"']drag[\"']\\s*:)",
+        "(?:case\\s*[\"']pointerDown[\"']|type\\s*===\\s*[\"']pointerDown[\"']|[\"']pointerDown[\"']\\s*:)",
+        "(?:case\\s*[\"']pointerMove[\"']|type\\s*===\\s*[\"']pointerMove[\"']|[\"']pointerMove[\"']\\s*:)",
+        "(?:case\\s*[\"']pointerUp[\"']|type\\s*===\\s*[\"']pointerUp[\"']|[\"']pointerUp[\"']\\s*:)",
+        "(?:case\\s*[\"']tap[\"']|type\\s*===\\s*[\"']tap[\"']|[\"']tap[\"']\\s*:)",
+        "(?:case\\s*[\"']wait[\"']|type\\s*===\\s*[\"']wait[\"']|[\"']wait[\"']\\s*:)"
+      ],
+      "fix_hint": "Handle TDD player-level actions through input(action), including pointer, drag, tap, wait, and start actions."
+    },
+    {
+      "id": "p1-scenario-loader-legal-preconditions",
+      "level": "P1",
+      "name": "loadScenario supports legal TDD precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bloadScenario\\s*[:(=][\\s\\S]{0,5000}\\bname\\b|\\b[A-Za-z_$][\\w$]*(?:[Ll]oadScenario)\\b\\s*\\([^)]*\\bname\\b)",
+        "(?:case\\s*[\"']boot[\"']|name\\s*===\\s*[\"']boot[\"']|[\"']boot[\"']\\s*:|\\bboot\\s*:|[\"']boot[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']first_level_start[\"']|name\\s*===\\s*[\"']first_level_start[\"']|[\"']first_level_start[\"']\\s*:|\\bfirst_level_start\\s*:|[\"']first_level_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']tool_hazard_start[\"']|name\\s*===\\s*[\"']tool_hazard_start[\"']|[\"']tool_hazard_start[\"']\\s*:|\\btool_hazard_start\\s*:|[\"']tool_hazard_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']moving_hazard_start[\"']|name\\s*===\\s*[\"']moving_hazard_start[\"']|[\"']moving_hazard_start[\"']\\s*:|\\bmoving_hazard_start\\s*:|[\"']moving_hazard_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']explosive_or_heavy_prop_start[\"']|name\\s*===\\s*[\"']explosive_or_heavy_prop_start[\"']|[\"']explosive_or_heavy_prop_start[\"']\\s*:|\\bexplosive_or_heavy_prop_start\\s*:|[\"']explosive_or_heavy_prop_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']fixed_hazard_start[\"']|name\\s*===\\s*[\"']fixed_hazard_start[\"']|[\"']fixed_hazard_start[\"']\\s*:|\\bfixed_hazard_start\\s*:|[\"']fixed_hazard_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']mechanism_start[\"']|name\\s*===\\s*[\"']mechanism_start[\"']|[\"']mechanism_start[\"']\\s*:|\\bmechanism_start\\s*:|[\"']mechanism_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']click_release_start[\"']|name\\s*===\\s*[\"']click_release_start[\"']|[\"']click_release_start[\"']\\s*:|\\bclick_release_start\\s*:|[\"']click_release_start[\"']\\s*(?=[,}\\]]))",
+        "(?:case\\s*[\"']progression_chain_start[\"']|name\\s*===\\s*[\"']progression_chain_start[\"']|[\"']progression_chain_start[\"']\\s*:|\\bprogression_chain_start\\s*:|[\"']progression_chain_start[\"']\\s*(?=[,}\\]]))",
+        "(?:(?:\\b(?:function\\s+)?(?:loadScenario|doLoadScenario|apiLoadScenario|testLoadScenario|_loadScenario)\\s*\\([^)]*\\)\\s*(?:\\{|:)|\\bloadScenario\\s*:\\s*function\\s*\\([^)]*\\))[\\s\\S]{0,3000}(?:\\b(?:SCENARIOS|scenarios|valid|known|map)\\s*\\[\\s*(?:name|String\\(name\\))\\s*\\][\\s\\S]{0,500}(?:invalidAction|reject)|\\b(?:hasOwnProperty|includes|indexOf)\\b[\\s\\S]{0,100}(?:name|String\\(name\\))[\\s\\S]{0,500}(?:invalidAction|reject)|\\bname\\s+in\\s+[A-Za-z_$][\\w$]*[\\s\\S]{0,500}(?:invalidAction|reject)|(?:default|else)\\s*[:{][\\s\\S]{0,700}\\binvalidAction\\b|\\bidx\\s*==\\s*null[\\s\\S]{0,300}\\binvalidAction\\b))",
+        "^(?![\\s\\S]*(?:\\b(?:function\\s+)?(?:loadScenario|doLoadScenario|apiLoadScenario|testLoadScenario|_loadScenario)\\s*\\([^)]*\\)\\s*(?:\\{|:)|\\bloadScenario\\s*:\\s*function\\s*\\([^)]*\\))[\\s\\S]{0,3500}(?:\\bunlocked(?:Levels|LevelIndexes)?\\b[\\s\\S]{0,150}\\.(?:push|unshift)\\s*\\(|\\bunlock\\s*\\([^)]*\\))[\\s\\S]{0,1000}(?:actionType\\s*[:=][^\\n;]{0,120}loadScenario|(?:recordAction|setLastAction|act|finish|ok)\\s*\\([^\\n]{0,220}loadScenario|lastSnapshotAction\\s*=\\s*\\{[^}]{0,350}loadScenario))[\\s\\S]*$"
+      ],
+      "fix_hint": "Implement legal loadScenario(name) preconditions without pre-applying damage, completion, unlocks, or triggers."
+    },
+    {
+      "id": "p1-target-ref-and-semantic-point-contract",
+      "level": "P1",
+      "name": "Actions support TargetRef and runtime SemanticPoint envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\btarget\\s*\\.\\s*kind|\\baction\\s*\\.\\s*target\\b|\\bTargetRef\\b)",
+        "(?:\\bref\\s*:|\\bref\\b|[\"']ref[\"']\\s*:)",
+        "(?:\\banchor\\b|\\boffsetScreen\\b)",
+        "(?:kind\\s*:\\s*[\"']dummy[\"']|[\"']dummy[\"']\\s*:|case\\s*[\"']dummy[\"']|(?:[A-Za-z_$][\\w$]*\\s*\\.\\s*)+kind\\s*===?\\s*[\"']dummy[\"'])",
+        "(?:kind\\s*:\\s*[\"']hazard[\"']|[\"']hazard[\"']\\s*:|case\\s*[\"']hazard[\"']|(?:[A-Za-z_$][\\w$]*\\s*\\.\\s*)+kind\\s*===?\\s*[\"']hazard[\"'])"
+      ],
+      "fix_hint": "Use semantic runtime points and TargetRef objects rather than fixed coordinates for public action targeting."
+    },
+    {
+      "id": "p1-rejection-and-last-action-envelope",
+      "level": "P1",
+      "name": "Rejected actions return lastAction reason without throwing",
+      "type": "regex_all",
+      "patterns": [
+        "\\blastAction\\s*(?::|=)",
+        "(?:\\blastAction\\s*:\\s*[\\s\\S]{0,800}\\bok\\s*:|\\b[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*\\s*=\\s*\\{[\\s\\S]{0,800}\\bok\\s*:)",
+        "(?:\\blastAction\\s*:\\s*[\\s\\S]{0,800}\\baccepted\\s*:|\\b[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*\\s*=\\s*\\{[\\s\\S]{0,800}\\baccepted\\s*:)",
+        "(?:\\breason\\s*:\\s*[\"'](?:notReady|blocked|noTarget|locked|invalidAction|outOfRange|alreadyUsed|notInteractable)[\"']|\\b(?:accepted|ok)\\s*:\\s*false|\\b[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*\\s*\\([^\\n)]{0,800}\\bfalse\\b[^\\n)]{0,800}\\))"
+      ],
+      "fix_hint": "Represent invalid, blocked, locked, or out-of-range actions through the TDD lastAction envelope."
+    },
+    {
+      "id": "p2-extended-and-persistence-contract",
+      "level": "P2",
+      "name": "Contract exposes extended hazard and progress preservation hooks",
+      "type": "regex_all",
+      "patterns": [
+        "(?:preserveProgress\\s*\\)|preserveProgress\\s*:|options\\s*\\.\\s*preserveProgress)",
+        "(?:\\bprogress\\b[\\s\\S]{0,12000}\\bpersisted\\s*:|\\bpersisted\\s*:[\\s\\S]{0,12000}\\bprogress\\b)",
+        "(?:(?:\\bcontrols\\b[\\s\\S]{0,12000}(?:\\bname\\s*:|[,{]\\s*name\\b))|(?:(?:\\bname\\s*:|[,{]\\s*name\\b)[\\s\\S]{0,12000}\\bcontrols\\b))"
+      ],
+      "fix_hint": "Expose P2 extended-family selection when available and support reset({ preserveProgress: true }) progress semantics."
+    }
+  ],
+  "proximity_checks": []
+}

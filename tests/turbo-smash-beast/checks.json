@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "l1-public-game-test-object",
+      "level": "P0",
+      "name": "window.__gameTest public contract object exists",
+      "type": "regex_all",
+      "fix_hint": "Expose window.__gameTest as the public TDD adapter.",
+      "patterns": [
+        "(?:(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=|(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(?:\\([^;]*\\b(?:window|globalThis|self)\\b[^;]*\\)|(?:window|globalThis|self))\\s*;[\\s\\S]{0,400}\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=)"
+      ]
+    },
+    {
+      "id": "l1-public-reset-method",
+      "level": "P0",
+      "name": "window.__gameTest.reset public method exists",
+      "type": "regex_all",
+      "fix_hint": "Implement window.__gameTest.reset(options?) and return a stable public snapshot.",
+      "patterns": [
+        "reset\\s*(?:(?:[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[^,{}]+=>))|(?:\\([^)]*\\)\\s*\\{))"
+      ]
+    },
+    {
+      "id": "l1-public-input-method",
+      "level": "P0",
+      "name": "window.__gameTest.input public method exists",
+      "type": "regex_all",
+      "fix_hint": "Implement window.__gameTest.input(action) for the TDD player-level action schema.",
+      "patterns": [
+        "input\\s*(?:(?:[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[^,{}]+=>))|(?:\\([^)]*\\)\\s*\\{))"
+      ]
+    },
+    {
+      "id": "l1-public-get-snapshot-method",
+      "level": "P0",
+      "name": "window.__gameTest.getSnapshot public method exists",
+      "type": "regex_all",
+      "fix_hint": "Implement window.__gameTest.getSnapshot() with the stable public state envelope required by the TDD.",
+      "patterns": [
+        "getSnapshot\\s*(?:(?:[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[^,{}]+=>))|(?:\\([^)]*\\)\\s*\\{))"
+      ]
+    },
+    {
+      "id": "l1-public-load-scenario-method",
+      "level": "P0",
+      "name": "window.__gameTest.loadScenario public method exists",
+      "type": "regex_all",
+      "fix_hint": "Implement window.__gameTest.loadScenario(name, options?) for legal preconditions only.",
+      "patterns": [
+        "loadScenario\\s*(?:(?:[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[^,{}]+=>))|(?:\\([^)]*\\)\\s*\\{))"
+      ]
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

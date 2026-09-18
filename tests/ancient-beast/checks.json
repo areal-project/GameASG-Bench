@@ -1,0 +1,76 @@
+{
+  "_doc": "Ancient Beast L1 public contract checks. Static syntax/html/tool checks are handled by the runner and quality gate; this file only verifies the public TDD contract surface.",
+  "checks": [
+    {
+      "id": "p0-public-contract-envelope",
+      "level": "P0",
+      "name": "Public test namespace exposes four required methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose reset, getSnapshot, input, and loadScenario on window.__gameTest."
+    },
+    {
+      "id": "p0-tactical-snapshot-envelope",
+      "level": "P0",
+      "name": "Snapshot contains tactical board turn unit and result summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:schemaVersion\\s*:\\s*1|[\"']schemaVersion[\"']\\s*:\\s*1|\\.\\s*schemaVersion\\s*=\\s*1|\\[\\s*[\"']schemaVersion[\"']\\s*\\]\\s*=\\s*1|(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*1[\\s\\S]*(?:schemaVersion\\s*:\\s*\\1|[\"']schemaVersion[\"']\\s*:\\s*\\1)|(?:schemaVersion\\s*:\\s*|[\"']schemaVersion[\"']\\s*:\\s*)([A-Za-z_$][\\w$]*)[\\s\\S]*(?:const|let|var)\\s+\\2\\s*=\\s*1))(?=[\\s\\S]*(?:screen\\s*:|[\"']screen[\"']\\s*:|\\.\\s*screen\\s*=|\\[\\s*[\"']screen[\"']\\s*\\]\\s*=))(?=[\\s\\S]*(?:phase\\s*:|[\"']phase[\"']\\s*:|\\.\\s*phase\\s*=|\\[\\s*[\"']phase[\"']\\s*\\]\\s*=))",
+        "(?=[\\s\\S]*(?:\\bboard\\s*:|[\"']board[\"']\\s*:|\\.\\s*board\\s*=|\\[\\s*[\"']board[\"']\\s*\\]\\s*=|\\bboard\\s*=))(?=[\\s\\S]*(?:\\bgridType\\s*:|[\"']gridType[\"']\\s*:\\s*|\\.\\s*gridType\\s*=|\\[\\s*[\"']gridType[\"']\\s*\\]\\s*=|\\bgridType\\s*=))(?=[\\s\\S]*(?:\\bturn\\s*:|[\"']turn[\"']\\s*:|\\.\\s*turn\\s*=|\\[\\s*[\"']turn[\"']\\s*\\]\\s*=|\\bturn\\s*=))(?=[\\s\\S]*(?:\\bcurrentUnitId\\s*:|[\"']currentUnitId[\"']\\s*:|\\.\\s*currentUnitId\\s*=|\\[\\s*[\"']currentUnitId[\"']\\s*\\]\\s*=|\\bcurrentUnitId\\s*=))",
+        "(?=[\\s\\S]*(?:\\bunits\\s*:|[\"']units[\"']\\s*:|\\.\\s*units\\s*=|\\[\\s*[\"']units[\"']\\s*\\]\\s*=|\\bunits\\s*=))(?=[\\s\\S]*(?:\\bresources\\s*:|[\"']resources[\"']\\s*:|\\.\\s*resources\\s*=|\\[\\s*[\"']resources[\"']\\s*\\]\\s*=|\\bresources\\s*=))(?=[\\s\\S]*(?:\\bresult\\s*:|[\"']result[\"']\\s*:|\\.\\s*result\\s*=|\\[\\s*[\"']result[\"']\\s*\\]\\s*=|\\bresult\\s*=))"
+      ],
+      "fix_hint": "Return the documented semantic snapshot fields."
+    },
+    {
+      "id": "p1-action-dispatch-contract",
+      "level": "P1",
+      "name": "Input dispatch recognizes tactical player actions",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:action\\.type|action\\[['\"]type['\"]\\])[\\s\\S]{0,5000}(?:startBattle|hoverTarget|focusDirection)[\\s\\S]{0,5000}(?:move|selectAbility|useAbility)|(?:\\bfunction\\s+(?:input|handleInput|publicInput)\\s*\\([^)]*\\)\\s*\\{|\\b(?:input|handleInput|publicInput)\\s*\\([^)]*\\)\\s*\\{)[\\s\\S]{0,5000}(?:\\b[A-Za-z_$][\\w$]*\\s*\\.\\s*type|\\b[A-Za-z_$][\\w$]*\\s*\\[\\s*['\"]type['\"]\\s*\\])[\\s\\S]{0,5000}(?:startBattle|hoverTarget|focusDirection)[\\s\\S]{0,5000}(?:move|selectAbility|useAbility)|(?:startBattle|hoverTarget|focusDirection)[\\s\\S]{0,5000}(?:move|selectAbility|useAbility)[\\s\\S]{0,5000}(?:function\\s+(?:input|handleInput|publicInput)\\s*\\(|(?:input|handleInput|publicInput)\\s*:\\s*(?:function\\b|\\([^)]*\\)\\s*=>)|(?:input|handleInput|publicInput)\\s*=))",
+        "(selectSummon|summon)[\\s\\S]{0,5000}(wait|endTurn)[\\s\\S]{0,5000}(openPanel|closePanel|restart)"
+      ],
+      "fix_hint": "Dispatch the TDD player-level actions through normal game rules."
+    },
+    {
+      "id": "p1-scenario-contract",
+      "level": "P1",
+      "name": "Scenario loader exposes legal tactical preconditions",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']local_battle_ready[\"']\\s*:|\\blocal_battle_ready\\s*(?:\\(|:)|[\"']local_battle_ready[\"']\\s*(?:[:,\\)\\]}=])))(?=[\\s\\S]*(?:\\bcase\\s*[\"']movement_choice_ready[\"']\\s*:|\\bmovement_choice_ready\\s*(?:\\(|:)|[\"']movement_choice_ready[\"']\\s*(?:[:,\\)\\]}=])))(?=[\\s\\S]*(?:\\bcase\\s*[\"']ability_target_ready[\"']\\s*:|\\bability_target_ready\\s*(?:\\(|:)|[\"']ability_target_ready[\"']\\s*(?:[:,\\)\\]}=])))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']summon_choice_ready[\"']\\s*:|\\bsummon_choice_ready\\s*(?:\\(|:)|[\"']summon_choice_ready[\"']\\s*(?:[:,\\)\\]}=])))(?=[\\s\\S]*(?:\\bcase\\s*[\"']queue_wait_ready[\"']\\s*:|\\bqueue_wait_ready\\s*(?:\\(|:)|[\"']queue_wait_ready[\"']\\s*(?:[:,\\)\\]}=])))(?=[\\s\\S]*(?:\\bcase\\s*[\"']victory_one_action_away[\"']\\s*:|\\bvictory_one_action_away\\s*(?:\\(|:)|[\"']victory_one_action_away[\"']\\s*(?:[:,\\)\\]}=])))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']non_current_unit_ready[\"']\\s*:|\\bnon_current_unit_ready\\s*(?:\\(|:)|[\"']non_current_unit_ready[\"']\\s*(?:[:,\\)\\]}=])))(?=[\\s\\S]*(?:\\bcase\\s*[\"']panel_ready[\"']\\s*:|\\bpanel_ready\\s*(?:\\(|:)|[\"']panel_ready[\"']\\s*(?:[:,\\)\\]}=])))",
+        "^(?![\\s\\S]*(?:(?:\\bcase\\s*[\"']victory_one_action_away[\"']\\s*:|\\bvictory_one_action_away\\s*(?:\\(|:)|[\"']victory_one_action_away[\"']\\s*(?:\\)|:|&&|\\|\\|))[\\s\\S]{0,4000}(?:\\.(?:hp|health|alive)\\s*=\\s*(?:\\d+|false|true)|\\b(?:hp|health)\\s*:\\s*\\d+|\\b(?:applyDamage|dealDamage|damageUnit)\\s*\\()|(?:\\.(?:hp|health|alive)\\s*=\\s*(?:\\d+|false|true)|\\b(?:hp|health)\\s*:\\s*\\d+|\\b(?:applyDamage|dealDamage|damageUnit)\\s*\\()[\\s\\S]{0,4000}(?:\\bcase\\s*[\"']victory_one_action_away[\"']\\s*:|\\bvictory_one_action_away\\s*(?:\\(|:)|[\"']victory_one_action_away[\"']\\s*(?:\\)|:|&&|\\|\\|))|(?:\\bfunction\\s+[A-Za-z_$][\\w$]*(?:scenario|preset)[A-Za-z_$]*\\s*\\([^)]*\\)\\s*\\{|\\b(?:const|let|var)\\s+[A-Za-z_$][\\w$]*(?:scenario|preset)[A-Za-z_$]*\\s*=\\s*(?:function\\b|\\([^)]*\\)\\s*=>\\s*\\{|\\{)|\\b(?:scenario|preset)[A-Za-z_$]*\\s*:\\s*(?:function\\b|\\([^)]*\\)\\s*=>\\s*\\{|\\{))[\\s\\S]{0,5000}(?:\\.(?:hp|health|alive)\\s*=\\s*(?:\\d+|false|true)|\\b(?:hp|health)\\s*:\\s*\\d+|\\b(?:applyDamage|dealDamage|damageUnit)\\s*\\()))[\\s\\S]*$"
+      ],
+      "fix_hint": "Provide documented legal setup scenarios without outcome setters. Match scenario branch/definition syntax; catalog names and snapshot scenario metadata alone do not identify state mutation."
+    },
+    {
+      "id": "p1-rejection-envelope-invariants",
+      "level": "P1",
+      "name": "Rejected actions expose reason and preserve tactical state",
+      "type": "regex_all",
+      "patterns": [
+        "(accepted\\s*:\\s*false|[\"']accepted[\"']\\s*:\\s*false)[\\s\\S]{0,1500}(reason|rejectionReason)",
+        "(invalid|illegal|blocked|notCurrent|insufficient|terminal)[\\s\\S]{0,5000}(accepted|rejectionReason)"
+      ],
+      "fix_hint": "Return a stable rejection envelope and do not mutate state on invalid actions."
+    },
+    {
+      "id": "p1-anti-cheat-no-outcome-setters",
+      "level": "P1",
+      "name": "Public contract avoids direct outcome mutation APIs",
+      "type": "regex_none",
+      "patterns": [
+        "__gameTest[\\s\\S]{0,9000}(setHealth|setDamage|setWinner|forceWin|setScore|setResource|setPosition|setQueue|killUnit)\\s*[:=(]"
+      ],
+      "fix_hint": "Remove direct outcome setters; expose only normal player actions and legal scenarios."
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "Park Master L1 public TDD contract checks",
+  "_source": "task/park-master/tdd.md",
+  "_scope": "L1 checks only the TDD-defined public __gameTest contract, player-level action schemas, legal scenario names, snapshot envelope, and rejection guards. Gameplay behavior, source structure, and internal implementation are covered by checks.js.",
+  "tool_checks": [
+    {
+      "id": "p0-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML document includes a runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Provide an HTML game entry with executable JavaScript."
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors in inline or local linked scripts."
+    },
+    {
+      "id": "p0-playable-script-not-empty",
+      "level": "P0",
+      "name": "Implementation script is not an empty shell",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 4000,
+      "fix_hint": "Implement the TDD public contract and playable behavior in executable script."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is assigned",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,900}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "Public adapter exposes reset, loadScenario, input, and getSnapshot",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement reset(options), loadScenario(name, options), input(action), and getSnapshot()."
+    },
+    {
+      "id": "p1-player-action-schema-contract",
+      "level": "P1",
+      "name": "Input action schema covers TDD player-level driving, state, touch, and editor families",
+      "type": "regex_all",
+      "patterns": [
+        "(?:case\\s*[\"']start[\"']|type\\s*[:=]\\s*[\"']start[\"']|[\"']start[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']start[\"'])\\s*[\\s\\S]{0,5000}(?:case\\s*[\"']holdControl[\"']|type\\s*[:=]\\s*[\"']holdControl[\"']|[\"']holdControl[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']holdControl[\"'])\\s*[\\s\\S]{0,2500}(?:[\\w$]+\\s*\\.\\s*control|\\bcontrol\\b|VALID_CTRLS|[A-Z_$][A-Z0-9_$]*|forward|reverse|left|right)",
+        "(?:case\\s*[\"']releaseControl[\"']|type\\s*[:=]\\s*[\"']releaseControl[\"']|[\"']releaseControl[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']releaseControl[\"'])[\\s\\S]{0,5000}(?:case\\s*[\"']releaseAllControls[\"']|type\\s*[:=]\\s*[\"']releaseAllControls[\"']|[\"']releaseAllControls[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']releaseAllControls[\"'])",
+        "(?:case\\s*[\"']comboHold[\"']|type\\s*[:=]\\s*[\"']comboHold[\"']|[\"']comboHold[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']comboHold[\"'])\\s*[\\s\\S]{0,3000}(?:[\\w$]+\\s*\\.\\s*controls|\\bcontrols\\b\\s*[:=]|[\"']controls[\"']\\s*:)[\\s\\S]{0,1800}(?:VALID_CTRLS|[A-Z_$][A-Z0-9_$]*|(?:is|has|valid|validate|check)[A-Za-z_$]*|forward|reverse|left|right)",
+        "(?:function\\s+\\w*[Ww]ait\\w*\\s*\\(|case\\s*[\"']wait[\"']|type\\s*[:=]\\s*[\"']wait[\"']|[\"']wait[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']wait[\"'])\\s*[\\s\\S]{0,3000}(?:durationMs|[\\w$]+\\s*\\.\\s*durationMs)",
+        "(?:case\\s*[\"']pause[\"']|type\\s*[:=]\\s*[\"']pause[\"']|[\"']pause[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']pause[\"'])\\s*[\\s\\S]{0,1600}(?:case\\s*[\"']resume[\"']|type\\s*[:=]\\s*[\"']resume[\"']|[\"']resume[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']resume[\"'])\\s*[\\s\\S]{0,1600}(?:case\\s*[\"']retry[\"']|type\\s*[:=]\\s*[\"']retry[\"']|[\"']retry[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']retry[\"'])\\s*[\\s\\S]{0,1600}(?:case\\s*[\"']nextLevel[\"']|type\\s*[:=]\\s*[\"']nextLevel[\"']|[\"']nextLevel[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']nextLevel[\"'])",
+        "(?:case\\s*[\"']touchStartControl[\"']|type\\s*[:=]\\s*[\"']touchStartControl[\"']|[\"']touchStartControl[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']touchStartControl[\"'])\\s*[\\s\\S]{0,1800}(?:case\\s*[\"']touchMoveControl[\"']|type\\s*[:=]\\s*[\"']touchMoveControl[\"']|[\"']touchMoveControl[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']touchMoveControl[\"'])\\s*[\\s\\S]{0,1800}(?:case\\s*[\"']touchEndControl[\"']|type\\s*[:=]\\s*[\"']touchEndControl[\"']|[\"']touchEndControl[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']touchEndControl[\"'])",
+        "(?:case\\s*[\"']editor[\"']|type\\s*[:=]\\s*[\"']editor[\"']|[\"']editor[\"']\\s*:|\\b[\\w$]+(?:\\s*\\.\\s*[\\w$]+)?\\s*(?:===|==)\\s*[\"']editor[\"'])\\s*[\\s\\S]{0,2500}(?:unsupported|notAvailable|enter|exit|selectPaletteItem|placeAt|dragSelected|copySelected|deleteSelected|setSelectedProperty)"
+      ],
+      "fix_hint": "Implement __gameTest.input(action) with the TDD player-level actions and semantic fields."
+    },
+    {
+      "id": "p1-legal-scenario-contract",
+      "level": "P1",
+      "name": "loadScenario recognizes legal TDD precondition scenarios",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?fresh_start[\"']?\\s*:|case\\s*[\"']fresh_start[\"']|\\bfresh_start\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']fresh_start[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?level_start[\"']?\\s*:|case\\s*[\"']level_start[\"']|\\blevel_start\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']level_start[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?open_lane[\"']?\\s*:|case\\s*[\"']open_lane[\"']|\\bopen_lane\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']open_lane[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?steering_lane[\"']?\\s*:|case\\s*[\"']steering_lane[\"']|\\bsteering_lane\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']steering_lane[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?obstacle_approach[\"']?\\s*:|case\\s*[\"']obstacle_approach[\"']|\\bobstacle_approach\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']obstacle_approach[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?moving_hazard_crossing[\"']?\\s*:|case\\s*[\"']moving_hazard_crossing[\"']|\\bmoving_hazard_crossing\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']moving_hazard_crossing[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?parking_approach[\"']?\\s*:|case\\s*[\"']parking_approach[\"']|\\bparking_approach\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']parking_approach[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?partial_or_fast_bay_contact[\"']?\\s*:|case\\s*[\"']partial_or_fast_bay_contact[\"']|\\bpartial_or_fast_bay_contact\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']partial_or_fast_bay_contact[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?active_driving[\"']?\\s*:|case\\s*[\"']active_driving[\"']|\\bactive_driving\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']active_driving[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?completed_level[\"']?\\s*:|case\\s*[\"']completed_level[\"']|\\bcompleted_level\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']completed_level[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_HANDLERS|SCENARIO_DEFAULT_LEVEL)\\s*=)[\\s\\S]{0,18000}(?:[\"']?post_crash_reset[\"']?\\s*:|case\\s*[\"']post_crash_reset[\"']|\\bpost_crash_reset\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']post_crash_reset[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)",
+        "(?:(?:function\\s+(?:[A-Za-z_$][\\w$]*)?(?:[Ll]oad|[Aa]pply)Scenario\\s*\\(|\\bloadScenario\\s*(?:[:=]|\\()|\\b(?:scenarios|SCENARIOS|SCENARIO_DEFAULT_LEVEL|SCENARIO_HANDLERS)\\s*=)[\\s\\S]{0,18000}(?:[\"']?touch_controls_ready[\"']?\\s*:|case\\s*[\"']touch_controls_ready[\"']|\\btouch_controls_ready\\b)|\\bfunction\\s+(?P<scenario_loader>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,18000}[\\\"\\']touch_controls_ready[\\\"\\'][\\s\\S]{0,18000}\\bloadScenario\\s*:\\s*(?P=scenario_loader)\\b)"
+      ],
+      "fix_hint": "Support the TDD scenario names as legal preconditions, including through an exported loader alias; scenarios must not pre-apply the result being tested."
+    },
+    {
+      "id": "p1-snapshot-state-level-vehicle-schema",
+      "level": "P1",
+      "name": "Snapshot exposes phase, level, timer, stars, vehicle, and target envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:phase\\s*:|[\"']phase[\"']\\s*:|\\bphase\\b(?=\\s*[,}]))[\\s\\S]{0,800}(?:screen\\s*:|[\"']screen[\"']\\s*:|\\bscreen\\b(?=\\s*[,}]))[\\s\\S]{0,800}(?:result\\s*:|[\"']result[\"']\\s*:|\\bresult\\b(?=\\s*[,}]))",
+        "(?:(?:level\\s*:|[\"']level[\"']\\s*:)\\s*(?:[A-Za-z_$][\\w$]*\\s*\\?\\s*)?\\{|(?:\\b(?:const|let|var)\\s+)?level\\s*=\\s*\\{)[\\s\\S]{0,2200}(?:index\\s*:|[\"']index[\"']\\s*:)[\\s\\S]{0,2200}(?:layoutId\\s*:|[\"']layoutId[\"']\\s*:)[\\s\\S]{0,2200}(?:hasTargetBay\\s*:|[\"']hasTargetBay[\"']\\s*:)[\\s\\S]{0,2200}(?:movingHazardCount\\s*:|[\"']movingHazardCount[\"']\\s*:)",
+        "(?:timer\\s*:|[\"']timer[\"']\\s*:)\\s*\\{[\\s\\S]{0,1000}(?:state\\s*:|[\"']state[\"']\\s*:)[\\s\\S]{0,1000}(?:elapsedMs\\s*:|[\"']elapsedMs[\"']\\s*:)",
+        "(?:stars\\s*:|[\"']stars[\"']\\s*:)\\s*\\{[\\s\\S]{0,1000}(?:current\\s*:|[\"']current[\"']\\s*:)",
+        "(?:(?:(?:vehicle\\s*:|[\"']vehicle[\"']\\s*:)\\s*(?:[A-Za-z_$][\\w$]*\\s*\\?\\s*)?\\{|(?:\\b(?:const|let|var)\\s+)?(?:car|vehicle)\\s*=\\s*\\{)[\\s\\S]{0,3200}(?:screenX\\s*:|[\"']screenX[\"']\\s*:)[\\s\\S]{0,3200}(?:screenY\\s*:|[\"']screenY[\"']\\s*:)[\\s\\S]{0,3200}(?:headingDeg\\s*:|[\"']headingDeg[\"']\\s*:)[\\s\\S]{0,3200}(?:signedSpeed\\s*:|[\"']signedSpeed[\"']\\s*:)[\\s\\S]{0,3200}(?:fullyInsideTarget\\s*:|[\"']fullyInsideTarget[\"']\\s*:)[\\s\\S]{0,3200}(?:alignedWithTarget\\s*:|[\"']alignedWithTarget[\"']\\s*:)|\\b(?:const|let|var)\\s+(?P<point_helper>[A-Za-z_$][\\w$]*)\\s*=\\s*(?:[A-Za-z_$][\\w$]*|\\([^)]*\\))\\s*=>\\s*\\(\\s*\\{[^{}]{0,1000}(?:screenX\\s*:|[\\\"\\']screenX[\\\"\\']\\s*:)[^{}]{0,1000}(?:screenY\\s*:|[\\\"\\']screenY[\\\"\\']\\s*:)[^{}]{0,1000}\\}\\s*\\)[\\s\\S]{0,3200}(?:vehicle\\s*:|[\\\"\\']vehicle[\\\"\\']\\s*:)\\s*Object\\s*\\.\\s*assign\\s*\\(\\s*\\{[^{}]{0,1000}\\}\\s*,\\s*(?P=point_helper)\\s*\\([^()]*\\)\\s*,\\s*\\{[^{}]{0,3200}(?:headingDeg\\s*:|[\\\"\\']headingDeg[\\\"\\']\\s*:)[^{}]{0,3200}(?:signedSpeed\\s*:|[\\\"\\']signedSpeed[\\\"\\']\\s*:)[^{}]{0,3200}(?:fullyInsideTarget\\s*:|[\\\"\\']fullyInsideTarget[\\\"\\']\\s*:)[^{}]{0,3200}(?:alignedWithTarget\\s*:|[\\\"\\']alignedWithTarget[\\\"\\']\\s*:)[^{}]{0,3200}\\}\\s*\\))",
+        "(?:(?:(?:target\\s*:|[\"']target[\"']\\s*:)\\s*(?:[A-Za-z_$][\\w$]*\\s*\\?\\s*)?\\{|(?:\\b(?:const|let|var)\\s+)?target\\s*=\\s*\\{)[\\s\\S]{0,1800}(?=[\\s\\S]{0,1800}(?:visible\\s*:|[\"']visible[\"']\\s*:))(?=[\\s\\S]{0,1800}(?:bounds\\s*:|[\"']bounds[\"']\\s*:))(?=[\\s\\S]{0,1800}(?:headingDeg\\s*:|[\"']headingDeg[\"']\\s*:))|\\b(?:const|let|var)\\s+(?P<point_helper>[A-Za-z_$][\\w$]*)\\s*=\\s*(?:[A-Za-z_$][\\w$]*|\\([^)]*\\))\\s*=>\\s*\\(\\s*\\{[^{}]{0,1000}(?:screenX\\s*:|[\\\"\\']screenX[\\\"\\']\\s*:)[^{}]{0,1000}(?:screenY\\s*:|[\\\"\\']screenY[\\\"\\']\\s*:)[^{}]{0,1000}\\}\\s*\\)[\\s\\S]{0,3200}(?:target\\s*:|[\\\"\\']target[\\\"\\']\\s*:)\\s*Object\\s*\\.\\s*assign\\s*\\(\\s*\\{[^{}]{0,1000}(?:visible\\s*:|[\\\"\\']visible[\\\"\\']\\s*:)[^{}]{0,1000}\\}\\s*,\\s*(?P=point_helper)\\s*\\([^()]*\\)\\s*,\\s*\\{(?=[^{}]{0,1000}(?:headingDeg\\s*:|[\\\"\\']headingDeg[\\\"\\']\\s*:))(?=[^{}]{0,1000}(?:bounds\\s*:|[\\\"\\']bounds[\\\"\\']\\s*:))[^{}]{0,1000}\\}\\s*\\))"
+      ],
+      "fix_hint": "Return the TDD Snapshot envelope and stable gameplay summaries, including fields composed with Object.assign and coordinate helpers, rather than private object graphs."
+    },
+    {
+      "id": "p1-snapshot-hazards-controls-overlays-playfield-schema",
+      "level": "P1",
+      "name": "Snapshot exposes hazards, controls, overlays, playfield, progress, and lastAction envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:hazards\\s*:|[\"']hazards[\"']\\s*:)\\s*\\{|\\b(?:const|let|var)\\s+hazards\\s*=\\s*\\{)[\\s\\S]{0,1800}(?:staticSolidVisible\\s*:|[\"']staticSolidVisible[\"']\\s*:)[\\s\\S]{0,1800}(?:movingVisible\\s*:|[\"']movingVisible[\"']\\s*:)[\\s\\S]{0,1800}(?:movingMotionRevision\\s*:|[\"']movingMotionRevision[\"']\\s*:)",
+        "(?:controls\\s*:|[\"']controls[\"']\\s*:)\\s*\\{[\\s\\S]{0,2400}(?:canDrive\\s*:|[\"']canDrive[\"']\\s*:|\\bcanDrive\\b\\s*(?=,|\\}))[\\s\\S]{0,2400}(?:held\\s*:|[\"']held[\"']\\s*:|\\bheld\\b\\s*(?=,|\\}))[\\s\\S]{0,2400}(?:semanticControls\\s*:|[\"']semanticControls[\"']\\s*:|\\bsemanticControls\\b\\s*(?=,|\\}))",
+        "(?:overlays\\s*:|[\"']overlays[\"']\\s*:)\\s*\\{[\\s\\S]{0,1800}(?:blocking\\s*:|[\"']blocking[\"']\\s*:|\\bblocking\\b\\s*(?=,|\\}))[\\s\\S]{0,1800}(?:pause\\s*:|[\"']pause[\"']\\s*:|\\bpause\\b\\s*(?=,|\\}))[\\s\\S]{0,1800}(?:complete\\s*:|[\"']complete[\"']\\s*:|\\bcomplete\\b\\s*(?=,|\\}))[\\s\\S]{0,1800}(?:crashFeedback\\s*:|[\"']crashFeedback[\"']\\s*:|\\bcrashFeedback\\b\\s*(?=,|\\}))",
+        "(?:playfield\\s*:|[\"']playfield[\"']\\s*:)\\s*\\{[\\s\\S]{0,2200}(?:visible\\s*:|[\"']visible[\"']\\s*:)[\\s\\S]{0,2200}(?:bounds\\s*:|[\"']bounds[\"']\\s*:)[\\s\\S]{0,2200}(?:renderRevision\\s*:|[\"']renderRevision[\"']\\s*:)[\\s\\S]{0,2200}(?:visualDiversity\\s*:|[\"']visualDiversity[\"']\\s*:)",
+        "(?:progress\\s*:|[\"']progress[\"']\\s*:)\\s*\\{[\\s\\S]{0,1400}(?:completedLevels\\s*:|[\"']completedLevels[\"']\\s*:)[\\s\\S]{0,1400}(?:currentLevelUnlocked\\s*:|[\"']currentLevelUnlocked[\"']\\s*:)",
+        "(?:lastAction\\s*:\\s*(?:Object\\.assign|\\{)|\\.lastAction\\s*=|function\\s+reject)[\\s\\S]{0,12000}(?:ok\\s*:|[\"']ok[\"']\\s*:)"
+      ],
+      "fix_hint": "Expose observable hazard, control, overlay, playfield, progress, and rejection summaries declared in tdd.md."
+    },
+    {
+      "id": "p1-rejection-envelope-and-invalid-action-guards",
+      "level": "P1",
+      "name": "Invalid actions reject without throwing and preserve stable state",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:ok\\s*[:=]\\s*(?:false|true|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*)|rejected\\s*[:=]\\s*(?:true|false|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*))[\\s\\S]{0,1200}(?:reason\\s*[:=]|[\"']reason[\"']\\s*:|[,\\{]\\s*reason\\s*[,\\}]))",
+        "(?:invalidPhase|unsupported|invalidControl|notAvailable|ruleRejected)",
+        "(?:(?:lastAction\\s*[:=]|[\"']lastAction[\"']\\s*:|\\.lastAction\\s*=)[\\s\\S]{0,1800}(?:ok\\s*[:=]\\s*(?:false|true|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*)|rejected\\s*[:=]\\s*(?:true|false|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*))[\\s\\S]{0,1200}(?:reason\\s*[:=]|[\"']reason[\"']\\s*:|[,\\{]\\s*reason\\s*[,\\}])|(?:function\\s+[A-Za-z_$][\\w$]*\\s*\\([^)]*\\)|\\b[A-Za-z_$][A-Za-z_$\\w]*\\s*\\([^)]*\\))[\\s\\S]{0,3000}(?:lastAction|return\\s*\\{)[\\s\\S]{0,1600}(?:ok\\s*[:=]\\s*(?:false|true|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*)|rejected\\s*[:=]\\s*(?:true|false|!!?[A-Za-z_$][\\w$]*|[A-Za-z_$][\\w$]*))[\\s\\S]{0,1200}(?:reason\\s*[:=]|[\"']reason[\"']\\s*:|[,\\{]\\s*reason\\s*[,\\}]))",
+        "(?:(?:case\\s*['\"]holdControl['\"]|(?:type|t)\\s*={2,3}\\s*['\"]holdControl['\"])[\\s\\S]{0,300}(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))|(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))[\\s\\S]{0,8000}(?:case\\s*['\"]holdControl['\"]|(?:type|t)\\s*={2,3}\\s*['\"]holdControl['\"]))",
+        "(?:(?:case\\s*['\"]comboHold['\"]|(?:type|t)\\s*={2,3}\\s*['\"]comboHold['\"])[\\s\\S]{0,300}(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))|(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))[\\s\\S]{0,8000}(?:case\\s*['\"]comboHold['\"]|(?:type|t)\\s*={2,3}\\s*['\"]comboHold['\"]))",
+        "(?:(?:case\\s*['\"]wait['\"]|(?:type|t)\\s*={2,3}\\s*['\"]wait['\"])[\\s\\S]{0,300}(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))|(?:(?:\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b)[\\s\\S]{0,220}(?:<\\s*0|>=\\s*0)|(?:Number\\.)?isFinite\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\)|(?:validDuration|validDur|finNonNeg)\\s*\\([^)]*\\b(?:durationMs|dur|duration|holdDur|comboDur|dur2|d)\\b[^)]*\\))[\\s\\S]{0,8000}(?:case\\s*['\"]wait['\"]|(?:type|t)\\s*={2,3}\\s*['\"]wait['\"]))",
+        "(?:case\\s*['\"]touchMoveControl['\"]|(?:type|t)\\s*={2,3}\\s*['\"]touchMoveControl['\"]|function\\s+[A-Za-z_$][\\w$]*TouchMove(?:Control)?)[\\s\\S]{0,900}(?:(?:action\\.control|a\\.control|control|c|ctl|mc)[\\s\\S]{0,220}(?:===?\\s*null|!==?\\s*null|==\\s*null|!=\\s*null|===?\\s*undefined|!==?\\s*undefined|==\\s*undefined|!=\\s*undefined)[\\s\\S]{0,450}(?:validControl|isValidControl|isControl|isDir|CONTROLS|VALID_CTRLS|CTLS)[\\s\\S]{0,450}(?:invalidControl|reject|ruleRejected|rejected))"
+      ],
+      "fix_hint": "Unknown actions, invalid controls, negative durations, and phase-inappropriate input must reject without corrupting the attempt."
+    },
+    {
+      "id": "p1-no-direct-outcome-cheat-contract",
+      "level": "P1",
+      "name": "Public test API does not expose direct win, crash, parking, star, collision, or progress setters",
+      "type": "regex_none",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*\\.\\s*(?:forceWin|directWin|setWin|forceCrash|directCrash|setCrash|awardStars|setStars|completeLevel|finishParking|triggerCollision|setProgress|unlockAllLevels)\\s*=",
+        "__gameTest[\\s\\S]{0,7000}(?:forceWin|directWin|setWin|forceCrash|directCrash|setCrash|awardStars|setStars|completeLevel|finishParking|triggerCollision|setProgress|unlockAllLevels)\\s*[:=]"
+      ],
+      "fix_hint": "The adapter may load legal preconditions, but it must not expose direct result, crash, star, collision, parking, or progress mutation shortcuts."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

@@ -1,0 +1,132 @@
+{
+  "_doc": "Penalty King L1 public TDD contract checks",
+  "_source": "task/penalty-king/tdd.md",
+  "version": "1.0",
+  "tool_checks": [
+    {
+      "id": "tool-html-script-structure",
+      "level": "P0",
+      "name": "HTML entry exposes executable script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Provide a single playable HTML entry with executable JavaScript."
+    },
+    {
+      "id": "tool-js-syntax-valid",
+      "level": "P0",
+      "name": "Inline JavaScript parses without fatal syntax errors",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax so the runtime checks can load the page."
+    },
+    {
+      "id": "tool-script-not-empty",
+      "level": "P0",
+      "name": "Playable script is not an empty shell",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 1200,
+      "fix_hint": "Implement the public game contract and player-visible state transitions in script."
+    }
+  ],
+  "checks": [
+    {
+      "id": "contract-game-test-envelope",
+      "level": "P0",
+      "name": "Public __gameTest envelope declares reset, input, getSnapshot, and loadScenario",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose the TDD public test adapter as window.__gameTest with reset(), getSnapshot(), input(action), and loadScenario(name, options?)."
+    },
+    {
+      "id": "contract-action-schema-player-inputs",
+      "level": "P1",
+      "name": "Action schema covers start, confirm, save, wait, restart, key, pointer, and touch",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]start['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"]start['\"]))(?=[\\s\\S]*(?:case\\s*['\"]confirm['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"]confirm['\"]))",
+        "(?=[\\s\\S]*(?:case\\s*['\"]save['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"]save['\"]))(?=[\\s\\S]*(?:(?:zone|target|key)\\s*(?:={1,3}|:)\\s*['\"]left['\"]|(?:ZONES|zones|availableZones)[\\s\\S]{0,120}\\bleft\\b))(?=[\\s\\S]*(?:(?:zone|target|key)\\s*(?:={1,3}|:)\\s*['\"]center['\"]|(?:ZONES|zones|availableZones)[\\s\\S]{0,120}\\bcenter\\b))(?=[\\s\\S]*(?:(?:zone|target|key)\\s*(?:={1,3}|:)\\s*['\"]right['\"]|(?:ZONES|zones|availableZones)[\\s\\S]{0,120}\\bright\\b))",
+        "(?=[\\s\\S]*(?:case\\s*['\"]wait['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"]wait['\"]))(?=[\\s\\S]*(?:shotResolved|roundAdvanced|resultShown|indicatorMoved))",
+        "(?=[\\s\\S]*(?:case\\s*['\"]restart['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"]restart['\"]))(?=[\\s\\S]*(?:case\\s*['\"](?:key|pointer|touch)['\"]|(?:type|action\\.type|[A-Za-z_$][\\w$]*)\\s*(?:={1,3}|:)\\s*['\"](?:key|pointer|touch)['\"]))"
+      ],
+      "fix_hint": "Implement the player-level action schema from TDD instead of exposing private or direct-score controls."
+    },
+    {
+      "id": "contract-snapshot-state-envelope",
+      "level": "P1",
+      "name": "Snapshot schema combines phase, screen, interactivity, score, round, prompt, result, controls, and revision",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:phase\\s*:|phase\\s*=|\\bphase\\s*[,}]))(?=[\\s\\S]*(?:screen\\s*:|screen\\s*=|\\bscreen\\s*[,}]))(?=[\\s\\S]*(?:prompt\\s*:|prompt\\s*=|\\bprompt\\s*[,}]))",
+        "(?=[\\s\\S]*(?:canInteractWithPlayfield\\s*:|canInteractWithPlayfield\\s*=|\\bcanInteractWithPlayfield\\s*[,}]))(?=[\\s\\S]*(?:overlayBlocking\\s*:|overlayBlocking\\s*=|\\boverlayBlocking\\s*[,}]))",
+        "(?:score\\s*:\\s*\\{|score\\s*=\\s*\\{)[\\s\\S]{0,500}(?:player\\s*:|player\\s*=)[\\s\\S]{0,500}(?:opponent\\s*:|opponent\\s*=)",
+        "(?:round\\s*:\\s*\\{|round\\s*=\\s*\\{)[\\s\\S]{0,800}(?:index\\s*:|index\\s*=)[\\s\\S]{0,800}(?:side\\s*:|side\\s*=)",
+        "(?=[\\s\\S]*(?:result\\s*:|result\\s*=|\\bresult\\s*[,}]))(?=[\\s\\S]*(?:controls\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*(?:\\s*\\([^)]*\\))?)|controls\\s*=|\\bcontrols\\s*[,}]))(?=[\\s\\S]*(?:revision\\s*:|revision\\s*=|\\brevision\\s*[,}]))"
+      ],
+      "fix_hint": "Return a stable public Snapshot summary with the TDD fields needed for behavior checks."
+    },
+    {
+      "id": "contract-shooting-and-ball-feedback",
+      "level": "P1",
+      "name": "Snapshot exposes shooting lock states, ball motion, actor poses, and lastEvent",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot)\\b\\s*(?:\\(|:|=)))(?=[\\s\\S]*(?:\\bshooting\\b\\s*(?::|=)|\\.shooting\\s*=))(?=[\\s\\S]*(?:\\bpowerState\\b\\s*(?::|=)))(?=[\\s\\S]*(?:\\bdirectionState\\b\\s*(?::|=)))",
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot)\\b\\s*(?:\\(|:|=)))(?=[\\s\\S]*(?:\\blockedPowerBand\\b\\s*(?::|=)))(?=[\\s\\S]*(?:\\blockedDirectionZone\\b\\s*(?::|=)))",
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot)\\b\\s*(?:\\(|:|=)))(?=[\\s\\S]*(?:\\bball\\b\\s*(?::|=)|\\.ball\\s*=))(?=[\\s\\S]*(?:\\bmotion\\b\\s*(?::|=)))(?=[\\s\\S]*(?:\\bscreenZone\\b\\s*(?::|=)|\\bscreenX\\b\\s*(?::|=)))",
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot)\\b\\s*(?:\\(|:|=)))(?=[\\s\\S]*(?:\\bactors\\b\\s*(?::|=)|\\.actors\\s*=))(?=[\\s\\S]*(?:\\bshooterPose\\b\\s*(?::|=)))(?=[\\s\\S]*(?:\\bkeeperPose\\b\\s*(?::|=)))",
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot)\\b\\s*(?:\\(|:|=)))(?=[\\s\\S]*(?:\\blastEvent\\b\\s*(?::|=)))(?=[\\s\\S]*\\b(?:powerLocked|shotStarted|goal|miss|saved|conceded|roundAdvanced|matchEnded|invalidIgnored)\\b)"
+      ],
+      "fix_hint": "Expose public shooting/ball/actor feedback summaries so L2 can verify trigger-to-visible-result causality."
+    },
+    {
+      "id": "contract-goalkeeping-three-zones",
+      "level": "P1",
+      "name": "Goalkeeping contract exposes left, center, and right save zones and observable regions",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:goalkeeping\\s*[:=][\\s\\S]*availableZones\\s*[:=]|availableZones\\s*[:=][\\s\\S]*goalkeeping\\s*[:=]))(?=[\\s\\S]*(?:availableZones\\s*[:=][\\s\\S]{0,1400}(?:left|center|right)|(?:const|let|var)\\s+[A-Za-z_$][\\w$]*\\s*=\\s*\\[(?=[^\\]]*left)(?=[^\\]]*center)(?=[^\\]]*right)[^\\]]*\\]))",
+        "(?:selectedZone\\s*:|selectedZone\\s*=)[\\s\\S]{0,1000}(?:incomingZone\\s*:|incomingZone\\s*=)",
+        "(?=[\\s\\S]*(?:observableRegions\\s*[:=]\\s*(?:\\{|[A-Za-z_$][\\w$]*\\s*\\([^)]*\\))|function\\s+observableRegions\\s*\\([^)]*\\)))(?=[\\s\\S]*saveLeft)(?=[\\s\\S]*saveCenter)(?=[\\s\\S]*saveRight)(?=[\\s\\S]*(?:centerX\\s*:|centerX\\s*=))(?=[\\s\\S]*(?:centerY\\s*:|centerY\\s*=))"
+      ],
+      "fix_hint": "Expose semantic save-zone summaries and hit regions for real pointer/touch input."
+    },
+    {
+      "id": "contract-scenarios-legal-preconditions",
+      "level": "P1",
+      "name": "loadScenario handles legal unscored preconditions from the TDD scenario enum",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:loadScenario\\s*[:=]|function\\s+loadScenario\\s*\\(|loadScenario\\s*\\([^)]*name))(?=[\\s\\S]*(?:fresh_match|shooting_power_ready|shooting_direction_ready))",
+        "(?=[\\s\\S]*(?:loadScenario\\s*[:=]|function\\s+loadScenario\\s*\\(|loadScenario\\s*\\([^)]*name))(?=[\\s\\S]*(?:goalkeeping_live|round_transition_pending|final_penalty_pending|result_ready))",
+        "(?=[\\s\\S]*(?:fresh_match|shooting_power_ready|shooting_direction_ready|goalkeeping_live|round_transition_pending|final_penalty_pending|result_ready))(?=[\\s\\S]*(?:resetGame|startMatch|beginPlayerShootTurn|beginPlayerSaveTurn|phase\\s*:|screen\\s*:|score\\s*:|round\\s*:|result\\s*:))"
+      ],
+      "fix_hint": "Implement only the legal TDD scenarios as setup states that still require player-level actions to cause outcomes."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "no-direct-score-or-result-action",
+      "level": "P1",
+      "name": "Public action schema must not expose direct score or direct result mutation",
+      "type": "regex_none",
+      "patterns": [
+        "type\\s*[=:]\\s*['\"](?:setScore|addScore|forceWin|forceLose|forceResult|completeMatch|awardGoal)['\"]",
+        "input\\s*\\([^)]*\\)[\\s\\S]{0,900}(?:setScore|forceWin|forceLose|forceResult|awardGoal)\\s*\\("
+      ],
+      "fix_hint": "Use player-level start/confirm/save/wait/restart actions; do not expose direct scoring or forced result shortcuts."
+    }
+  ],
+  "proximity_checks": []
+}

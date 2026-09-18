@@ -1,0 +1,134 @@
+{
+  "slug": "super-screw",
+  "stage": "checks",
+  "description": "L1 public contract checks for the Super Screw TDD adapter only. These checks validate the portable test API surface, action/scenario schema, snapshot envelope, and stable observable fields without inspecting private gameplay implementation.",
+  "tool_checks": [
+    {
+      "id": "tool-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML entry exposes a runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with html, body, and script runtime content.",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "reason": "The L1 runner applies tool checks to the target HTML; the repository separately validates this JSON configuration."
+    },
+    {
+      "id": "tool-implementation-syntax",
+      "level": "P0",
+      "name": "Implementation JavaScript has valid Node syntax",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix implementation JavaScript syntax errors so the L1 runtime check can parse it.",
+      "reason": "Use the L1 runner's supported JavaScript syntax tool."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-adapter-methods",
+      "level": "P0",
+      "name": "Public test adapter exposes the TDD method contract",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Expose window.__gameTest with reset, input, getSnapshot, and loadScenario as defined by the TDD.",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "reason": "TDD requires a portable window.__gameTest adapter with reset, loadScenario, input, and getSnapshot. The pattern is scoped to the public adapter object, not source-private functions."
+    },
+    {
+      "id": "p0-snapshot-envelope-contract",
+      "level": "P0",
+      "name": "Adapter returns a snapshot object or ok/snapshot envelope",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Return either a direct public Snapshot or an {ok, snapshot, reason?} envelope; do not return only {ok:true}.",
+      "patterns": [
+        "(return\\s+\\{\\s*(ok\\s*:\\s*(true|false)[\\s\\S]{0,240}snapshot\\s*:|snapshot\\s*:\\s*[A-Za-z_$][\\w$]*[\\s\\S]{0,240}ok\\s*:)|return\\s+[A-Za-z_$][\\w$]*Snapshot\\s*\\()"
+      ],
+      "reason": "The TDD allows direct Snapshot or { ok, snapshot, reason? }, but forbids adapter calls that only return {ok:true}."
+    },
+    {
+      "id": "p1-action-schema-dispatch",
+      "level": "P1",
+      "name": "Public input dispatch recognizes semantic action types",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Dispatch semantic player-level action types and required identifiers through __gameTest.input.",
+      "patterns": [
+        "(?:[A-Za-z_$][\\w$]*\\.type|\\{\\s*type\\s*\\})[\\s\\S]{0,2600}(start|tapScrew|tapHole|tapBlank|tapPart|control|selectLevel|key|wait)[\\s\\S]{0,2600}(screwId|holeId|partId|control|level|key|until)"
+      ],
+      "reason": "TDD action schema is player-level and semantic. This checks contextual dispatch/type-field support instead of bare gameplay words."
+    },
+    {
+      "id": "p1-scenario-enum-contract",
+      "level": "P1",
+      "name": "loadScenario supports legal named preconditions",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Support the legal named loadScenario preconditions without pre-applying puzzle outcomes.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=)(?=[\\s\\S]*\\bloadScenario\\s*(?::|=|\\())(?=[\\s\\S]*\\bboot_menu\\b)(?=[\\s\\S]*\\blevel_start\\b)(?=[\\s\\S]*\\bscrew_floating\\b)(?=[\\s\\S]*\\bvalid_move_available\\b)",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=)(?=[\\s\\S]*\\bloadScenario\\s*(?::|=|\\())(?=[\\s\\S]*\\bblocked_hole_available\\b)(?=[\\s\\S]*\\brelease_candidate\\b)(?=[\\s\\S]*\\bundo_available\\b)(?=[\\s\\S]*\\btool_available\\b)",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=)(?=[\\s\\S]*\\bloadScenario\\s*(?::|=|\\())(?=[\\s\\S]*\\bnear_completion\\b)(?=[\\s\\S]*\\bpanel_open\\b)"
+      ],
+      "reason": "Scenario names are public legal preconditions in TDD. The check is scoped to loadScenario rather than private level setup."
+    },
+    {
+      "id": "p1-snapshot-state-schema",
+      "level": "P1",
+      "name": "Snapshot includes state-machine, overlay, revision, and interaction fields",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Expose stable phase, screen, result, blocking, interaction, and revision fields in the public snapshot.",
+      "patterns": [
+        "\\{[\\s\\S]{0,5000}\\bphase\\s*(?::|,)[\\s\\S]{0,900}\\bscreen\\s*(?::|,)[\\s\\S]{0,900}\\bresult\\s*(?::|,)[\\s\\S]{0,900}\\boverlayBlocking\\s*(?::|,)[\\s\\S]{0,900}\\bcanInteractWithPlayfield\\s*(?::|,)[\\s\\S]{0,900}\\brevision\\s*(?::|,)[\\s\\S]{0,900}\\bvisualRevision\\s*(?::|[,}])"
+      ],
+      "reason": "Generated implementations must expose stable public state fields from the TDD snapshot schema."
+    },
+    {
+      "id": "p1-snapshot-entity-schema",
+      "level": "P1",
+      "name": "Snapshot includes puzzle entities with semantic screen positions",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Expose semantic screw, hole, and part entities with IDs, state, screen positions, and target/support metadata.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:\\bscrews\\s*:|['\\\"]screws['\\\"]\\s*:|\\bscrews\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bholes\\s*:|['\\\"]holes['\\\"]\\s*:|\\bholes\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bparts\\s*:|['\\\"]parts['\\\"]\\s*:|\\bparts\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bid\\s*:|['\\\"]id['\\\"]\\s*:|\\bid\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bstate\\s*:|['\\\"]state['\\\"]\\s*:|\\bstate\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bscreenX\\s*:|['\\\"]screenX['\\\"]\\s*:|\\bscreenX\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bscreenY\\s*:|['\\\"]screenY['\\\"]\\s*:|\\bscreenY\\s*(?=[,}])))(?=[\\s\\S]*(?:\\blegalTarget\\s*:|['\\\"]legalTarget['\\\"]\\s*:|\\blegalTarget\\s*(?=[,}])|\\bblocked\\s*:|['\\\"]blocked['\\\"]\\s*:|\\bblocked\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bsupport\\s*:|['\\\"]support['\\\"]\\s*:|\\bsupport\\s*(?=[,}])|\\bvisible\\s*:|['\\\"]visible['\\\"]\\s*:|\\bvisible\\s*(?=[,}])))"
+      ],
+      "reason": "TDD requires semantic positions and summaries for screws, holes, and parts so L2 can dispatch real input without fixed coordinates."
+    },
+    {
+      "id": "p2-controls-panels-tool-schema",
+      "level": "P2",
+      "name": "Snapshot exposes controls, panels, tutorial, hint, and tool summaries",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Expose the declared controls, panels, tutorial, hint, and tool summaries through the public snapshot.",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:\\bcontrols\\s*:|['\\\"]controls['\\\"]\\s*:|[,{]\\s*controls\\s*(?=[,}])))(?=[\\s\\S]*(?:\\brestart\\s*:|\\bundo\\s*:|\\bhint\\s*:|\\btool\\s*:|\\bnextLevel\\s*:|\\breplayLevel\\s*:|\\blevelSelect\\s*:|\\bsettings\\s*:|\\bleaderboard\\s*:))(?=[\\s\\S]*(?:\\bpanels\\s*:|['\\\"]panels['\\\"]\\s*:|[,{]\\s*panels\\s*(?=[,}])))(?=[\\s\\S]*(?:\\bactive\\s*:|['\\\"]active['\\\"]\\s*:))(?=[\\s\\S]*(?:\\btutorial\\s*:|['\\\"]tutorial['\\\"]\\s*:))(?=[\\s\\S]*(?:\\bhint\\s*:|['\\\"]hint['\\\"]\\s*:))(?=[\\s\\S]*(?:\\btool\\s*:|['\\\"]tool['\\\"]\\s*:))"
+      ],
+      "reason": "TDD declares public summaries for auxiliary systems; this checks schema availability without requiring a DOM layout."
+    },
+    {
+      "id": "p2-rejection-envelope-contract",
+      "level": "P2",
+      "name": "Rejected public actions expose reason or unchanged-state feedback",
+      "target": "index.html",
+      "type": "regex_all",
+      "fix_hint": "Reject invalid actions with a reason/accepted envelope or stable unchanged state without throwing or mutating protected state.",
+      "patterns": [
+        "(lastAction\\s*:\\s*\\{[\\s\\S]{0,1000}accepted\\s*:[\\s\\S]{0,800}reason\\s*:|reason\\s*:\\s*['\\\"](invalidTarget|blocked|busy|locked|noUndo|noHint|noTool|panelBlocking|none)['\\\"]|feedback\\s*:\\s*\\{[\\s\\S]{0,1000}rejection\\s*:)"
+      ],
+      "reason": "The public contract needs observable rejection semantics for invalid target, busy, locked, empty undo/hint/tool, and panel-blocking paths."
+    }
+  ]
+}

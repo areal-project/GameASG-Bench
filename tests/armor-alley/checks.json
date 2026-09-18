@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "description": "Armor Alley L1 checks only verify the public TDD contract surface. Gameplay behavior is covered by L2 runtime checks.",
+  "checks": [
+    {
+      "id": "p0-contract-object-assignment",
+      "level": "P0",
+      "name": "TDD public contract object is assigned",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{\\s*__gameTest\\s*:",
+        "(?:\\b(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(?:\\(?\\s*(?:window|globalThis|self)\\b|\\(?\\s*typeof\\s+(?:window|globalThis|self)\\b[^;\\n]*\\b(?:window|globalThis|self)\\b)[^;\\n]*;[\\s\\S]*?(?:\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*\\1\\s*,\\s*\\{\\s*__gameTest\\s*:))"
+      ],
+      "fix_hint": "Expose window.__gameTest as the public test contract described in task/armor-alley/tdd.md."
+    },
+    {
+      "id": "p0-contract-methods-reset-input-snapshot",
+      "level": "P0",
+      "name": "Required contract methods are defined together",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Define reset, loadScenario, input, and getSnapshot on window.__gameTest."
+    },
+    {
+      "id": "p1-action-schema-dispatch",
+      "level": "P1",
+      "name": "Player-level action schema is recognized",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\b(?:var|let|const)\\s+)?[A-Za-z_$][\\w$]*\\s*=\\s*(?:(?:[A-Za-z_$][\\w$]*\\s*&&\\s*)?[A-Za-z_$][\\w$]*\\s*(?:\\.\\s*type\\b|\\[\\s*['\\\"]type['\\\"]\\s*\\]))|(?:action|cmd|request)\\s*\\.\\s*type|(?:action|cmd|request)\\s*\\[\\s*['\\\"]type['\\\"]\\s*\\])",
+        "(?:case\\s*['\\\"]startBattle['\\\"]\\s*:|\\bstartBattle\\b\\s*:|\\btype\\s*===?\\s*['\\\"]startBattle['\\\"])",
+        "(?:case\\s*['\\\"]setFlightIntent['\\\"]\\s*:|\\bsetFlightIntent\\b\\s*:|\\btype\\s*===?\\s*['\\\"]setFlightIntent['\\\"])",
+        "(?:case\\s*['\\\"](?:holdFire|dropBomb|orderUnit)['\\\"]\\s*:|\\b(?:holdFire|dropBomb|orderUnit)\\b\\s*:|\\btype\\s*===?\\s*['\\\"](?:holdFire|dropBomb|orderUnit)['\\\"])",
+        "(?:direction|vector|target|unit|durationMs)\\s*:"
+      ],
+      "fix_hint": "Handle TDD player-level action objects with type plus semantic fields such as direction, target, unit, vector, and durationMs."
+    },
+    {
+      "id": "p1-scenario-enum-contract",
+      "level": "P1",
+      "name": "Legal scenario names are supported as contract setup",
+      "type": "regex_all",
+      "patterns": [
+        "\\bloadScenario\\b",
+        "(?:(?=[\\s\\S]*\\bmenu_ready\\b)(?=[\\s\\S]*\\bbattle_start_airborne\\b)(?=[\\s\\S]*\\bflight_control_sample\\b)(?=[\\s\\S]*\\bair_attack_with_targets\\b)(?=[\\s\\S]*\\bweapon_rejection\\b)(?=[\\s\\S]*\\bsoldier_drop_opportunity\\b)|(?=[\\s\\S]*\\b(?:function\\s+loadScenario|loadScenario\\s*:\\s*(?:async\\s+)?function)\\s*\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)[\\s\\S]*\\b(?:buildBattle|loadScenario)\\s*\\(\\s*\\1\\s*\\)))",
+        "(?=[\\s\\S]*\\blow_resources_near_landing\\b)(?=[\\s\\S]*\\bproduction_ready\\b)(?=[\\s\\S]*\\bproduction_rejection\\b)(?=[\\s\\S]*\\bactive_ground_war\\b)(?=[\\s\\S]*\\bconvoy_near_enemy_base\\b)(?=[\\s\\S]*\\benemy_convoy_threat\\b)",
+        "(?=[\\s\\S]*\\bcontested_bunker\\b)(?=[\\s\\S]*\\bair_hazard_nearby\\b)(?=[\\s\\S]*\\bradar_awareness\\b)(?=[\\s\\S]*\\bpause_guard\\b)(?=[\\s\\S]*\\bresult_lock_from_play\\b)"
+      ],
+      "fix_hint": "Support TDD legal scenario names as public semantic preconditions without pre-applying the tested result."
+    },
+    {
+      "id": "p1-snapshot-envelope-fields",
+      "level": "P1",
+      "name": "Snapshot envelope contains required public field groups",
+      "type": "regex_all",
+      "patterns": [
+        "(?:phase\\s*:|['\\\"]phase['\\\"]\\s*:)[\\s\\S]{0,500}(?:screen\\s*:|['\\\"]screen['\\\"]\\s*:)[\\s\\S]{0,500}(?:result\\s*:|['\\\"]result['\\\"]\\s*:)",
+        "(?:playfield\\s*:|['\\\"]playfield['\\\"]\\s*:|\\.\\s*playfield\\s*=|\\[\\s*['\\\"]playfield['\\\"]\\s*\\]\\s*=)",
+        "(?:helicopter\\s*:|['\\\"]helicopter['\\\"]\\s*:|\\.\\s*helicopter\\s*=|\\[\\s*['\\\"]helicopter['\\\"]\\s*\\]\\s*=)",
+        "(?:economy\\s*:|['\\\"]economy['\\\"]\\s*:|\\.\\s*economy\\s*=|\\[\\s*['\\\"]economy['\\\"]\\s*\\]\\s*=)",
+        "(?:entityCounts\\s*:|['\\\"]entityCounts['\\\"]\\s*:|\\.\\s*entityCounts\\s*=|\\[\\s*['\\\"]entityCounts['\\\"]\\s*\\]\\s*=)",
+        "(?:revisions\\s*:|['\\\"]revisions['\\\"]\\s*:|\\.\\s*revisions\\s*=|\\[\\s*['\\\"]revisions['\\\"]\\s*\\]\\s*=)",
+        "(?:radar\\s*:|['\\\"]radar['\\\"]\\s*:|\\.\\s*radar\\s*=|\\[\\s*['\\\"]radar['\\\"]\\s*\\]\\s*=)",
+        "(?:lastAction\\s*:|['\\\"]lastAction['\\\"]\\s*:)[\\s\\S]{0,500}(?:notifications\\s*:|['\\\"]notifications['\\\"]\\s*:)"
+      ],
+      "fix_hint": "Return the TDD Snapshot envelope with public groups for playfield, helicopter, economy, counts, revisions, radar, lastAction, and notifications."
+    },
+    {
+      "id": "p1-rejection-result-envelope",
+      "level": "P1",
+      "name": "Rejected actions report reason without mutating hidden state",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:lastAction\\s*:|['\\\"]lastAction['\\\"]\\s*:)[\\s\\S]{0,400}(?:ok\\s*:|['\\\"]ok['\\\"]\\s*:)[\\s\\S]{0,400}(?:reason\\s*:|['\\\"]reason['\\\"]\\s*:)|(?:[A-Za-z_$][\\w$]*\\.)?lastAction\\s*=\\s*\\{[\\s\\S]{0,600}(?:ok\\s*:|['\\\"]ok['\\\"]\\s*:)[\\s\\S]{0,600}(?:reason\\s*:|['\\\"]reason['\\\"]\\s*:)|(?:[A-Za-z_$][\\w$]*\\.)?lastAction\\.ok\\s*=\\s*[\\s\\S]{0,600}(?:[A-Za-z_$][\\w$]*\\.)?lastAction\\.reason\\s*=)",
+        "(?:noFunds|unitCap|noAmmo|noBombs|noGuidedWeapon|noTarget|noSoldiers|resultLocked|invalidAction)",
+        "(?:(?:visibleFeedback\\s*[:=]|['\\\"]visibleFeedback['\\\"]\\s*[:=]|latestKind\\s*[:=]|['\\\"]latestKind['\\\"]\\s*[:=])[\\s\\S]*(?:rejection|warning|blocked|unavailable)|(?:rejection|warning|blocked|unavailable)[\\s\\S]*(?:visibleFeedback\\s*[:=]|['\\\"]visibleFeedback['\\\"]\\s*[:=]|latestKind\\s*[:=]|['\\\"]latestKind['\\\"]\\s*[:=]))"
+      ],
+      "fix_hint": "Rejected TDD actions must surface lastAction.ok/reason and visible feedback while preserving unrelated resources."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

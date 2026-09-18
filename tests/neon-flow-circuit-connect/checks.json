@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "game": "neon-flow-circuit-connect",
+  "description": "L1 public TDD contract checks for Neon Flow: Circuit Connect. These checks only validate the portable public interface declared in task/neon-flow-circuit-connect/tdd.md; gameplay behavior is covered by checks.js.",
+  "tool_checks": [
+    {
+      "id": "p0-html-script-present",
+      "level": "P0",
+      "name": "HTML document includes executable script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with executable inline or linked JavaScript.",
+      "required_tags": [
+        "html",
+        "script"
+      ]
+    },
+    {
+      "id": "p0-js-syntax-valid",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix inline and linked JavaScript syntax errors so the page can load."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed on the browser global",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,400}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined adapter as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "TDD adapter exposes reset, getSnapshot, input, and loadScenario methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement all four public methods declared by the TDD contract."
+    },
+    {
+      "id": "p1-snapshot-top-level-envelope",
+      "level": "P1",
+      "name": "Snapshot envelope includes public phase, screen, overlay, level, grid, controls, feedback, result, and lastAction groups",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:return\\s+|(?:var|let|const)\\s+[A-Za-z_$][\\w$]*\\s*=\\s*)\\{[\\s\\S]{0,2200}(?:phase\\s*:|phase\\s*=|\\.phase\\s*=)[\\s\\S]{0,900}(?:screen\\s*:|screen\\s*=|\\.screen\\s*=)[\\s\\S]{0,900}(?:activePanel\\s*:|activePanel\\s*=|\\.activePanel\\s*=)|(?:phase\\s*:|phase\\s*=|\\.phase\\s*=)[\\s\\S]{0,2200}(?:screen\\s*:|screen\\s*=|\\.screen\\s*=)[\\s\\S]{0,2200}(?:activePanel\\s*:|activePanel\\s*=|\\.activePanel\\s*=))",
+        "(?:overlayBlocking\\s*:|overlayBlocking\\s*=)[\\s\\S]{0,500}(?:canInteractWithPlayfield\\s*:|canInteractWithPlayfield\\s*=)",
+        "(?:(?:\\blevel\\s*:|\\blevel\\s*=|\\.level\\s*=)[\\s\\S]{0,10000}(?:gridSize\\s*:|gridSize\\s*=|(?<![\\w$])gridSize\\s*(?=[,}]))[\\s\\S]{0,1800}(?:pairCount\\s*:|pairCount\\s*=|(?<![\\w$])pairCount\\s*(?=[,}]))[\\s\\S]{0,1800}(?:savedLineCount\\s*:|savedLineCount\\s*=|(?<![\\w$])savedLineCount\\s*(?=[,}]))|(?:gridSize\\s*:|gridSize\\s*=|(?<![\\w$])gridSize\\s*(?=[,}]))[\\s\\S]{0,1800}(?:pairCount\\s*:|pairCount\\s*=|(?<![\\w$])pairCount\\s*(?=[,}]))[\\s\\S]{0,1800}(?:savedLineCount\\s*:|savedLineCount\\s*=|(?<![\\w$])savedLineCount\\s*(?=[,}]))[\\s\\S]{0,10000}(?:\\blevel\\s*:|\\blevel\\s*=|\\.level\\s*=))",
+        "(?:(?:\\bgrid\\s*:|\\bgrid\\s*=|\\.grid\\s*=)[\\s\\S]{0,10000}(?:cells\\s*:|cells\\s*=|(?<![\\w$])cells\\s*(?=[,}]))[\\s\\S]{0,1800}(?:pairs\\s*:|pairs\\s*=|(?<![\\w$])pairs\\s*(?=[,}]))[\\s\\S]{0,1800}(?:savedLines\\s*:|savedLines\\s*=|(?<![\\w$])savedLines\\s*(?=[,}]))|(?:cells\\s*:|cells\\s*=|(?<![\\w$])cells\\s*(?=[,}]))[\\s\\S]{0,1800}(?:pairs\\s*:|pairs\\s*=|(?<![\\w$])pairs\\s*(?=[,}]))[\\s\\S]{0,1800}(?:savedLines\\s*:|savedLines\\s*=|(?<![\\w$])savedLines\\s*(?=[,}]))[\\s\\S]{0,10000}(?:\\bgrid\\s*:|\\bgrid\\s*=|\\.grid\\s*=))",
+        "(?:(?:(?:\\bcontrols\\s*:|\\bcontrols\\s*=|\\.controls\\s*=)[\\s\\S]{0,10000}(?:canUndo\\s*:|canUndo\\s*=|(?<![\\w$])canUndo\\s*(?=[,}]))[\\s\\S]{0,1800}(?:canReset\\s*:|canReset\\s*=|(?<![\\w$])canReset\\s*(?=[,}]))[\\s\\S]{0,1800}(?:canBackToLevelSelect\\s*:|canBackToLevelSelect\\s*=|(?<![\\w$])canBackToLevelSelect\\s*(?=[,}]))|(?:canUndo\\s*:|canUndo\\s*=|(?<![\\w$])canUndo\\s*(?=[,}]))[\\s\\S]{0,1800}(?:canReset\\s*:|canReset\\s*=|(?<![\\w$])canReset\\s*(?=[,}]))[\\s\\S]{0,1800}(?:canBackToLevelSelect\\s*:|canBackToLevelSelect\\s*=|(?<![\\w$])canBackToLevelSelect\\s*(?=[,}]))[\\s\\S]{0,10000}(?:\\bcontrols\\s*:|\\bcontrols\\s*=|\\.controls\\s*=))|\\bfunction\\s+(?P<controls_factory>[A-Za-z_$][\\w$]*)\\s*\\(\\s*\\)\\s*\\{[^{}]{0,1200}\\breturn\\s*\\{(?=[^{}]*\\bcanUndo\\s*(?::|[,}]))(?=[^{}]*\\bcanReset\\s*(?::|[,}]))(?=[^{}]*\\bcanBackToLevelSelect\\s*(?::|[,}]))[^{}]*\\}[\\s\\S]*?\\b(?P<controls_alias>[A-Za-z_$][\\w$]*)\\s*=\\s*(?P=controls_factory)\\s*\\(\\s*\\)[\\s\\S]*?\\bcontrols\\s*:\\s*(?P=controls_alias)\\s*[,}])",
+        "(?:feedback\\s*:|feedback\\s*=)\\s*\\{[\\s\\S]{0,1000}(?:lastEvent\\s*:|lastEvent\\s*=)[\\s\\S]{0,500}(?:visualRevision\\s*:|visualRevision\\s*=)[\\s\\S]{0,500}(?:playfieldRevision\\s*:|playfieldRevision\\s*=)",
+        "(?:result\\s*:|result\\s*=)\\s*\\{[\\s\\S]{0,900}(?:status\\s*:|status\\s*=)[\\s\\S]{0,500}(?:currentLevelComplete\\s*:|currentLevelComplete\\s*=)[\\s\\S]{0,500}(?:rewardAppliedCount\\s*:|rewardAppliedCount\\s*=)",
+        "(?:(?:\\blastAction\\s*:|\\blastAction\\s*=|\\.lastAction\\s*=)[\\s\\S]{0,1400}(?:ok\\s*:|ok\\s*=|(?<![\\w$])ok\\s*(?=[,}]))[\\s\\S]{0,1000}(?:type\\s*:|type\\s*=|(?<![\\w$])type\\s*(?=[,}]))[\\s\\S]{0,1000}(?:reason\\s*:|reason\\s*=|(?<![\\w$])reason\\s*(?=[,}]))|(?:ok\\s*:|ok\\s*=|(?<![\\w$])ok\\s*(?=[,}]))[\\s\\S]{0,1000}(?:type\\s*:|type\\s*=|(?<![\\w$])type\\s*(?=[,}]))[\\s\\S]{0,1000}(?:reason\\s*:|reason\\s*=|(?<![\\w$])reason\\s*(?=[,}]))[\\s\\S]{0,10000}(?:\\blastAction\\s*:|\\blastAction\\s*=|\\.lastAction\\s*=))"
+      ],
+      "fix_hint": "Return the public snapshot groups and fields defined by task/neon-flow-circuit-connect/tdd.md."
+    },
+    {
+      "id": "p1-action-contract-envelope",
+      "level": "P1",
+      "name": "Input action contract recognizes player-level drawing, correction, navigation, and rejection envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:action|input)\\s*\\.[\\s\\S]{0,160}(?:type)|(?:type\\s*[:=][\\s\\S]{0,900}(?:chooseLevel|dragPath|pointerDownCell|pointerMoveCell|pointerUp))",
+        "(?:type\\s*[:=][\\s\\S]{0,900}(?:tapCell|undo|resetLevel|backToLevelSelect|replayLevel|nextLevel|tapOutsidePlayfield|noop))|(?:case\\s+['\\\"](?:tapCell|undo|resetLevel|backToLevelSelect|replayLevel|nextLevel|tapOutsidePlayfield|noop)['\\\"]\\s*:)",
+        "(?:lastAction|reason)\\s*[:=][\\s\\S]{0,1400}(?:unsupported|invalidPhase|lockedLevel|outOfBounds|nonAdjacent|wrongEndpoint|occupiedCell|foreignEndpoint|incompletePath|blockedByResult|noUndo|noChange|scenarioUnavailable)"
+      ],
+      "fix_hint": "Implement the TDD player-level action schema and stable rejection reasons."
+    },
+    {
+      "id": "p1-scenario-contract-enum",
+      "level": "P1",
+      "name": "loadScenario supports the legal TDD precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bloadScenario\\s*[:(=]|\\bfunction\\s+[A-Za-z_$][\\w$]*loadScenario\\s*\\())",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']initial_app[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']initial_app[\"']|[\"']initial_app[\"']\\s*[,}:\\]]|\\binitial_app\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']level_select[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']level_select[\"']|[\"']level_select[\"']\\s*[,}:\\]]|\\blevel_select\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']fresh_unlocked_level[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']fresh_unlocked_level[\"']|[\"']fresh_unlocked_level[\"']\\s*[,}:\\]]|\\bfresh_unlocked_level\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']fresh_locked_level_attempt[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']fresh_locked_level_attempt[\"']|[\"']fresh_locked_level_attempt[\"']\\s*[,}:\\]]|\\bfresh_locked_level_attempt\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']active_partial_drag[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']active_partial_drag[\"']|[\"']active_partial_drag[\"']\\s*[,}:\\]]|\\bactive_partial_drag\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']saved_single_connection[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']saved_single_connection[\"']|[\"']saved_single_connection[\"']\\s*[,}:\\]]|\\bsaved_single_connection\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']blocked_by_saved_connection[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']blocked_by_saved_connection[\"']|[\"']blocked_by_saved_connection[\"']\\s*[,}:\\]]|\\bblocked_by_saved_connection\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']one_move_before_completion[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']one_move_before_completion[\"']|[\"']one_move_before_completion[\"']\\s*[,}:\\]]|\\bone_move_before_completion\\s*:))",
+        "(?=[\\s\\S]*(?:\\bcase\\s*[\"']completed_level[\"']\\s*:|\\b[A-Za-z_$][\\w$]*\\s*={2,3}\\s*[\"']completed_level[\"']|[\"']completed_level[\"']\\s*[,}:\\]]|\\bcompleted_level\\s*:))",
+          "^(?![\\s\\S]*?(?:\\b|_)completed_level\\b[\\s\\S]{0,2500}(?:\\b(?:phase|screen|activePanel|overlayBlocking|resultStatus|result|currentLevelComplete|reward[A-Za-z_$]*|completed(?:Level|Set|Flag|Status)?)\\b\\s*=(?![=])\\s*(?:[\"'](?:result|complete)[\"']|true|\\d+)|\\b(?:apply|enter|show|set|mark)(?:Completion|Result|Complete|Win)\\s*\\())[\\s\\S]*$"
+      ],
+      "fix_hint": "Support every legal scenario name declared by the TDD without pre-applying the action under test."
+    },
+    {
+      "id": "p1-route-observability-contract",
+      "level": "P1",
+      "name": "Grid route observability exposes semantic cells, pair endpoints, line cells, and target zones (route hints optional)",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\b(?:cells|gridCells|cellSummaries|buildPublicCells|buildPublicCell|publicCell)\\b)(?=[\\s\\S]{0,6000}(?:\\brow\\s*(?::|=)\\s*|\\brow\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bcol\\s*(?::|=)\\s*|\\bcol\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bstate\\s*(?::|=)\\s*|\\bstate\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bcolorKey\\s*(?::|=)\\s*|\\bcolorKey\\s*[,}]))",
+        "(?:\\b(?:pairs|pairSummaries|buildPublicPairs|buildPublicPair)\\b)(?=[\\s\\S]{0,6000}(?:\\bcolorKey\\s*(?::|=)\\s*|\\bcolorKey\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bendpoints\\s*(?::|=)\\s*|\\bendpoints\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bconnected\\s*(?::|=)\\s*|\\bconnected\\s*[,}]))",
+        "(?:(?:\\b(?:savedLines|lines|lineSummaries|buildPublicLines|buildPublicLine)\\b)(?=[\\s\\S]{0,6000}(?:\\bcells\\s*(?::|=)\\s*|\\bcells\\s*[,}]))(?=[\\s\\S]{0,6000}(?:\\bcomplete\\s*(?::|=)\\s*|\\bcomplete\\s*[,}]))|\\bfunction\\s+(?P<line_factory>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{\\s*return\\s*\\{(?=[^{}]*\\bcolorKey\\s*:)(?=[^{}]*\\bcells\\s*:)(?=(?:\\s*|[^{}]*,\\s*)complete\\s*(?::|[,}]))[^{}]*\\}[\\s\\S]*?\\bsavedLines\\s*:\\s*[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*\\.map\\s*\\(\\s*(?P<line_arg>[A-Za-z_$][\\w$]*)\\s*=>\\s*(?P=line_factory)\\s*\\(\\s*(?P=line_arg)\\s*[,)])",
+        "(?:\\b(?:targetZones|targetZonesSnap|zones|zoneSummaries|buildTargetZones|zoneFromEl)\\b)(?=[\\s\\S]{0,7000}(?:\\bkind\\s*(?::|=)\\s*|\\bkind\\s*[,}]))(?=[\\s\\S]{0,7000}(?:\\bsemantic\\s*(?::|=)\\s*|\\bsemantic\\s*[,}]))(?=[\\s\\S]{0,7000}(?:\\benabled\\s*(?::|=)\\s*|\\benabled\\s*[,}]))"
+      ],
+      "fix_hint": "Expose public semantic grid summaries with required cell, pair, saved-line, and target-zone fields. routeHints are optional per task/neon-flow-circuit-connect/tdd.md and must not be a mandatory static requirement."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

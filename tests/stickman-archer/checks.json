@@ -1,0 +1,120 @@
+{
+  "_doc": "Stickman Archer L1 public contract checks",
+  "tool_checks": [
+    {
+      "id": "tool-html-js-syntax",
+      "level": "P0",
+      "name": "Inline JavaScript parses successfully",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "The game entry must contain syntactically valid JavaScript."
+    },
+    {
+      "id": "tool-html-structure",
+      "level": "P0",
+      "name": "HTML entry exposes document and script structure",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "The game should be delivered as a playable HTML document with script logic."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-envelope",
+      "level": "P0",
+      "name": "Public __gameTest envelope is assigned on window",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose the TDD public contract through window.__gameTest with callable methods."
+    },
+    {
+      "id": "p0-public-method-set",
+      "level": "P0",
+      "name": "Public contract includes reset, getSnapshot, input, and loadScenario",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement all four methods named by the TDD public interface."
+    },
+    {
+      "id": "p1-action-dispatch-contract",
+      "level": "P1",
+      "name": "Input action dispatch covers aiming, panel, shop, and restart action families",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\])[\\s\\S]{0,6000}['\"]aimStart['\"][\\s\\S]{0,6000}['\"]aimMove['\"][\\s\\S]{0,6000}['\"]aimRelease['\"]|switch\\s*\\([^)]*action[^)]*\\)[\\s\\S]{0,6000}['\"]aimStart['\"][\\s\\S]{0,6000}['\"]aimMove['\"][\\s\\S]{0,6000}['\"]aimRelease['\"][\\s\\S]{0,6000}(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\]))",
+        "(?:(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\])[\\s\\S]{0,6000}['\"]openPanel['\"][\\s\\S]{0,6000}['\"]closePanel['\"]|switch\\s*\\([^)]*action[^)]*\\)[\\s\\S]{0,6000}['\"]openPanel['\"][\\s\\S]{0,6000}['\"]closePanel['\"][\\s\\S]{0,6000}(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\]))",
+        "(?:(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\])[\\s\\S]{0,6000}['\"]buy['\"][\\s\\S]{0,6000}['\"]equip['\"]|switch\\s*\\([^)]*action[^)]*\\)[\\s\\S]{0,6000}['\"]buy['\"][\\s\\S]{0,6000}['\"]equip['\"][\\s\\S]{0,6000}(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\]))",
+        "(?:(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\])[\\s\\S]{0,6000}['\"]restart['\"]|switch\\s*\\([^)]*action[^)]*\\)[\\s\\S]{0,6000}['\"]restart['\"][\\s\\S]{0,6000}(?:\\b(?:action|a|act|cmd|request)\\s*\\.\\s*type\\b|\\b(?:action|a|act|cmd|request)\\s*\\[\\s*['\"]type['\"]\\s*\\]))"
+      ],
+      "fix_hint": "Route TDD player-level actions through input(action), not through private shortcuts."
+    },
+    {
+      "id": "p1-scenario-loader-contract",
+      "level": "P1",
+      "name": "Scenario loader exposes legal GDD preconditions",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bloadScenario\\b|['\"]loadScenario['\"]\\s*:))(?=[\\s\\S]*['\"]first_level_ready['\"])(?=[\\s\\S]*['\"]aim_direction_probe['\"])",
+        "(?=[\\s\\S]*(?:\\bloadScenario\\b|['\"]loadScenario['\"]\\s*:))(?=[\\s\\S]*['\"]single_enemy_open['\"])(?=[\\s\\S]*['\"]enemy_pressure['\"])",
+        "(?=[\\s\\S]*(?:\\bloadScenario\\b|['\"]loadScenario['\"]\\s*:))(?=[\\s\\S]*['\"]victory_path_ready['\"])(?=[\\s\\S]*['\"]shop_affordable['\"])",
+        "(?=[\\s\\S]*(?:\\bloadScenario\\b|['\"]loadScenario['\"]\\s*:))(?=[\\s\\S]*['\"]shop_insufficient_funds['\"])"
+      ],
+      "fix_hint": "Support the TDD scenario names as legal preconditions that still require player actions for outcomes."
+    },
+    {
+      "id": "p1-snapshot-state-schema",
+      "level": "P1",
+      "name": "Snapshot returns state, render, HUD, level, progress, and combat summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bphase\\s*:|\\.\\s*phase\\s*=|['\"]phase['\"]\\s*:|\\[['\"]phase['\"]\\]\\s*=|\\bphase\\s*[,}]))(?=[\\s\\S]*(?:\\bscreen\\s*:|\\.\\s*screen\\s*=|['\"]screen['\"]\\s*:|\\[['\"]screen['\"]\\]\\s*=|\\bscreen\\s*[,}]))(?=[\\s\\S]*(?:\\bactivePanel\\s*:|\\.\\s*activePanel\\s*=|['\"]activePanel['\"]\\s*:|\\[['\"]activePanel['\"]\\]\\s*=|\\bactivePanel\\s*[,}]))",
+        "(?=[\\s\\S]*(?:\\brender\\s*:|\\.\\s*render\\s*=|['\"]render['\"]\\s*:|\\[['\"]render['\"]\\]\\s*=))(?=[\\s\\S]*(?:\\bplayfield\\s*:|\\.\\s*playfield\\s*=|['\"]playfield['\"]\\s*:|\\[['\"]playfield['\"]\\]\\s*=))(?=[\\s\\S]*(?:\\bhud\\s*:|\\.\\s*hud\\s*=|['\"]hud['\"]\\s*:|\\[['\"]hud['\"]\\]\\s*=))",
+        "(?=[\\s\\S]*(?:\\blevel\\s*:|\\.\\s*level\\s*=|['\"]level['\"]\\s*:|\\[['\"]level['\"]\\]\\s*=))(?=[\\s\\S]*(?:\\bprogress\\s*:|\\.\\s*progress\\s*=|['\"]progress['\"]\\s*:|\\[['\"]progress['\"]\\]\\s*=))(?=[\\s\\S]*(?:\\bcombat\\s*:|\\.\\s*combat\\s*=|['\"]combat['\"]\\s*:|\\[['\"]combat['\"]\\]\\s*=))"
+      ],
+      "fix_hint": "Return the stable Snapshot sections defined by the TDD, not a bare ok flag."
+    },
+    {
+      "id": "p1-aim-projectile-schema",
+      "level": "P1",
+      "name": "Snapshot includes aim and projectile summaries needed for visible shooting checks",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\baim\\s*:|\\.\\s*aim\\s*=|['\"]aim['\"]\\s*:|\\[['\"]aim['\"]\\]\\s*=|\\baim\\s*[,}]))(?=[\\s\\S]*(?:\\bstate\\s*:|\\.\\s*state\\s*=|['\"]state['\"]\\s*:|\\[['\"]state['\"]\\]\\s*=|\\bstate\\s*[,}]))(?=[\\s\\S]*(?:\\bpitch\\s*:|\\.\\s*pitch\\s*=|['\"]pitch['\"]\\s*:|\\[['\"]pitch['\"]\\]\\s*=|\\bpitch\\s*[,}]))(?=[\\s\\S]*(?:\\bpreviewVisible\\s*:|\\.\\s*previewVisible\\s*=|['\"]previewVisible['\"]\\s*:|\\[['\"]previewVisible['\"]\\]\\s*=|\\bpreviewVisible\\s*[,}]))",
+        "(?=[\\s\\S]*(?:\\bprojectiles\\s*:|\\.\\s*projectiles\\s*=|['\"]projectiles['\"]\\s*:|\\[['\"]projectiles['\"]\\]\\s*=|\\bprojectiles\\s*[,}]))(?=[\\s\\S]*(?:\\bplayerCount\\s*:|\\.\\s*playerCount\\s*=|['\"]playerCount['\"]\\s*:|\\[['\"]playerCount['\"]\\]\\s*=|\\bplayerCount\\s*[,}]))(?=[\\s\\S]*(?:\\bactiveCount\\s*:|\\.\\s*activeCount\\s*=|['\"]activeCount['\"]\\s*:|\\[['\"]activeCount['\"]\\]\\s*=|\\bactiveCount\\s*[,}]))(?=[\\s\\S]*(?:\\blastPlayerShot\\s*:|\\.\\s*lastPlayerShot\\s*=|['\"]lastPlayerShot['\"]\\s*:|\\[['\"]lastPlayerShot['\"]\\]\\s*=|\\blastPlayerShot\\s*[,}]))"
+      ],
+      "fix_hint": "Expose public aim and projectile summaries so L2 can verify drag, release, flight, and cooldown behavior."
+    },
+    {
+      "id": "p1-invalid-action-rejection",
+      "level": "P1",
+      "name": "Invalid actions produce rejection or unchanged-state envelope",
+      "type": "regex_any",
+      "patterns": [
+        "(ok\\s*:|['\"]ok['\"]\\s*:)\\s*false[\\s\\S]{0,600}(reason\\s*:|['\"]reason['\"]\\s*:)",
+        "(reason\\s*:|['\"]reason['\"]\\s*:)[\\s\\S]{0,600}(ok\\s*:|['\"]ok['\"]\\s*:)\\s*false",
+        "invalid[\\s_-]?action[\\s\\S]{0,800}(return\\s+currentSnapshot\\s*\\(|getSnapshot\\s*\\(\\)|unchanged)",
+        "(?=[\\s\\S]*(?:unknown\\s+action|invalid\\s+action))(?=[\\s\\S]*(?:snapshot\\s*\\(\\s*false|ok\\s*:\\s*false))",
+        "(?:\\.\\s*ok|\\[['\"]ok['\"]\\s*\\])\\s*=\\s*false[\\s\\S]{0,600}(?:\\.\\s*reason|\\[['\"]reason['\"]\\s*\\])\\s*=",
+        "(?=[\\s\\S]*(?:[Uu]nknown[\\s_-]?action|[Ii]nvalid[\\s_-]?action))(?=[\\s\\S]*(?:\\b(?:snapshot|buildSnapshot|failSnap|reject|snapshotRejected)\\s*\\(\\s*false\\s*,|(?:\\.\\s*ok|\\[['\"]ok['\"]\\s*\\])\\s*=\\s*false))"
+      ],
+      "fix_hint": "Invalid input(action) calls must not throw or mutate state silently."
+    }
+  ]
+}

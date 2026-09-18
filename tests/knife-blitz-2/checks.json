@@ -1,0 +1,151 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "knife-blitz-2",
+  "_source": "task/knife-blitz-2/tdd.md",
+  "_scope": "L1 checks only TDD-defined public interface contracts. Gameplay behavior is tested by L2 checks.js.",
+  "tool_checks": [
+    {
+      "id": "p0-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML document includes a runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with html and script elements for the game runtime.",
+      "required_tags": [
+        "html",
+        "script"
+      ]
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix inline and local JavaScript syntax errors so the page can load."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed on the global window",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,600}__gameTest\\s*:"
+      ],
+      "fix_hint": "Expose the TDD-defined public adapter as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "Public adapter exposes reset, loadScenario, input, and getSnapshot",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement all four methods declared by task/knife-blitz-2/tdd.md."
+    },
+    {
+      "id": "p1-action-result-envelope",
+      "level": "P1",
+      "name": "Input actions support accepted/rejected result envelope with snapshot",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?=[\\s\\S]*(?:\\blastAction\\b\\s*(?:[:=]|\\.)|[\"']lastAction[\"']\\s*:))(?=[\\s\\S]*(?:\\baccepted\\b\\s*(?:[:=]|[,}])|[\"']accepted[\"']\\s*:))(?=[\\s\\S]*(?:\\breason\\b\\s*(?:[:=]|[,}])|[\"']reason[\"']\\s*:))|(?=[\\s\\S]*(?:\\bok\\b\\s*(?:[:=]|[,}])|[\"']ok[\"']\\s*:))(?=[\\s\\S]*(?:\\breason\\b\\s*(?:[:=]|[,}])|[\"']reason[\"']\\s*:))(?=[\\s\\S]*(?:\\bsnapshot\\b\\s*(?:[:=]|[,}])|[\"']snapshot[\"']\\s*:)))",
+        "(?=[\\s\\S]*(?:\\b(?:snapshot|getSnapshot|buildSnapshot)\\s*\\(|\\bsnapshot\\b\\s*(?:[:=]|[,}])|[\"']snapshot[\"']\\s*:))",
+        "(?:blocked|cooldown|invalid|insufficientFunds|locked|notReady|noHeart)"
+      ],
+      "fix_hint": "Invalid actions must be rejected without throwing and must preserve an observable snapshot."
+    },
+    {
+      "id": "p1-navigation-and-throw-action-schema",
+      "level": "P1",
+      "name": "Action schema includes navigation, throw, wait, overlay, shop, and settings families",
+      "type": "regex_all",
+      "patterns": [
+        "(?:case\\s*[\"']start[\"']|\\bstart\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']start[\"']|type\\s*[:=]\\s*[\"']start[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']start[\"'])",
+        "(?:case\\s*[\"']restart[\"']|\\brestart\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']restart[\"']|type\\s*[:=]\\s*[\"']restart[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']restart[\"'])",
+        "(?:case\\s*[\"']nextLevel[\"']|\\bnextLevel\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']nextLevel[\"']|type\\s*[:=]\\s*[\"']nextLevel[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']nextLevel[\"'])",
+        "(?:case\\s*[\"']throw[\"']|\\bthrow\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']throw[\"']|type\\s*[:=]\\s*[\"']throw[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']throw[\"'])",
+        "(?=[\\s\\S]*\\bvia\\b)(?=[\\s\\S]*(?:[\"']mouse[\"']|[\"']touch[\"']|[\"']keyboard[\"']))",
+        "(?:case\\s*[\"']holdThrowKey[\"']|\\bholdThrowKey\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']holdThrowKey[\"']|type\\s*[:=]\\s*[\"']holdThrowKey[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']holdThrowKey[\"'])",
+        "(?:case\\s*[\"']dragOnPlayfield[\"']|\\bdragOnPlayfield\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']dragOnPlayfield[\"']|type\\s*[:=]\\s*[\"']dragOnPlayfield[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']dragOnPlayfield[\"'])",
+        "(?:case\\s*[\"']wait[\"']|\\bwait\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']wait[\"']|type\\s*[:=]\\s*[\"']wait[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']wait[\"'])",
+        "(?:safeGapAtHitLine|hazardAtHitLine|settlementReady|motionObserved)",
+        "(?:case\\s*[\"']openOverlay[\"']|\\bopenOverlay\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']openOverlay[\"']|type\\s*[:=]\\s*[\"']openOverlay[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']openOverlay[\"'])",
+        "(?:case\\s*[\"']closeOverlay[\"']|\\bcloseOverlay\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']closeOverlay[\"']|type\\s*[:=]\\s*[\"']closeOverlay[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']closeOverlay[\"'])",
+        "(?:case\\s*[\"']confirmOverlay[\"']|\\bconfirmOverlay\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']confirmOverlay[\"']|type\\s*[:=]\\s*[\"']confirmOverlay[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']confirmOverlay[\"'])",
+        "(?=[\\s\\S]*(?:[\"']shop[\"']|[\"']settings[\"']|[\"']leaderboard[\"']|[\"']tip[\"']))",
+        "(?:case\\s*[\"']selectShopCategory[\"']|\\bselectShopCategory\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']selectShopCategory[\"']|type\\s*[:=]\\s*[\"']selectShopCategory[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']selectShopCategory[\"'])",
+        "(?:case\\s*[\"']chooseShopItem[\"']|\\bchooseShopItem\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']chooseShopItem[\"']|type\\s*[:=]\\s*[\"']chooseShopItem[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']chooseShopItem[\"'])",
+        "(?:case\\s*[\"']confirmPurchase[\"']|\\bconfirmPurchase\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']confirmPurchase[\"']|type\\s*[:=]\\s*[\"']confirmPurchase[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']confirmPurchase[\"'])",
+        "(?:case\\s*[\"']cancelPurchase[\"']|\\bcancelPurchase\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']cancelPurchase[\"']|type\\s*[:=]\\s*[\"']cancelPurchase[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']cancelPurchase[\"'])",
+        "(?:case\\s*[\"']equipItem[\"']|\\bequipItem\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']equipItem[\"']|type\\s*[:=]\\s*[\"']equipItem[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']equipItem[\"'])",
+        "(?:case\\s*[\"']setSetting[\"']|\\bsetSetting\\s*:|\\b[A-Za-z_$][\\w$]*\\.type\\s*(?:===|==)\\s*[\"']setSetting[\"']|type\\s*[:=]\\s*[\"']setSetting[\"']|\\b(?:t|type)\\s*(?:===|==)\\s*[\"']setSetting[\"'])"
+      ],
+      "fix_hint": "Expose every player-level TDD action family through the public adapter; quoted or unquoted dispatch keys and separated handlers are valid, but direct outcome shortcuts are not."
+    },
+    {
+      "id": "p1-legal-scenario-manifest",
+      "level": "P1",
+      "name": "loadScenario supports the declared legal setup states",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*loadScenario)(?=[\\s\\S]*(?:home_ready|playable_basic|playable_safe_gap))",
+        "(?=[\\s\\S]*loadScenario)(?=[\\s\\S]*(?:playable_with_reward|playable_with_clearing_reward))",
+        "(?=[\\s\\S]*loadScenario)(?=[\\s\\S]*(?:playable_collision_with_heart|playable_collision_no_heart|near_level_completion))",
+        "(?=[\\s\\S]*loadScenario)(?=[\\s\\S]*(?:boss_intro_ready|shop_affordable_unowned|shop_insufficient_funds|shop_locked_target))",
+        "(?=[\\s\\S]*loadScenario)(?=[\\s\\S]*(?:settings_overlay_open|leaderboard_overlay_open))"
+      ],
+      "fix_hint": "Scenario names must create legal preconditions only; outcomes still require player-level triggers."
+    },
+    {
+      "id": "p1-snapshot-state-and-playfield-schema",
+      "level": "P1",
+      "name": "Snapshot exposes state machine, overlay blocking, and readable playfield summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?:phase\\s*:|[\"']phase[\"']\\s*:|\\bphase\\b(?=\\s*[,}]))[\\s\\S]{0,420}(?:screen\\s*:|[\"']screen[\"']\\s*:|\\bscreen\\b(?=\\s*[,}]))[\\s\\S]{0,420}(?:activeOverlay\\s*:|[\"']activeOverlay[\"']\\s*:|\\bactiveOverlay\\b(?=\\s*[,}]))",
+        "(?:overlayBlocking\\s*:|[\"']overlayBlocking[\"']\\s*:|\\boverlayBlocking\\b(?=\\s*[,}]))[\\s\\S]{0,340}(?:canInteractWithPlayfield\\s*:|[\"']canInteractWithPlayfield[\"']\\s*:|\\bcanInteractWithPlayfield\\b(?=\\s*[,}]))[\\s\\S]{0,340}(?:canThrow\\s*:|[\"']canThrow[\"']\\s*:|\\bcanThrow\\b(?=\\s*[,}]))",
+        "(?:playfield\\s*:|[\"']playfield[\"']\\s*:|\\bplayfield\\b(?=\\s*[,}]))[\\s\\S]{0,900}(?:bounds\\s*:|[\"']bounds[\"']\\s*:|\\bbounds\\b(?=\\s*[,}]))[\\s\\S]{0,900}(?:throwZone\\s*:|[\"']throwZone[\"']\\s*:|\\bthrowZone\\b(?=\\s*[,}]))[\\s\\S]{0,900}(?:hitLine\\s*:|[\"']hitLine[\"']\\s*:|\\bhitLine\\b(?=\\s*[,}]))",
+        "(?:target\\s*:|[\"']target[\"']\\s*:|\\btarget\\b(?=\\s*[,}]))[\\s\\S]{0,900}(?:visible\\s*:|[\"']visible[\"']\\s*:|\\bvisible\\b(?=\\s*[,}]))[\\s\\S]{0,900}(?:rotationRevision\\s*:|[\"']rotationRevision[\"']\\s*:|\\brotationRevision\\b(?=\\s*[,}]))"
+      ],
+      "fix_hint": "Snapshots must summarize visible state, overlay blocking, and semantic playfield geometry."
+    },
+    {
+      "id": "p1-gameplay-economy-feedback-schema",
+      "level": "P1",
+      "name": "Snapshot exposes level, score, economy, entities, shop, settings, progression, and feedback summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:level\\s*:|[\"']level[\"']\\s*:)[\\s\\S]{0,900}(?:requiredThrows\\s*:|[\"']requiredThrows[\"']\\s*:)[\\s\\S]{0,700}(?:remainingThrows\\s*:|[\"']remainingThrows[\"']\\s*:)[\\s\\S]{0,700}(?:completedThrows\\s*:|[\"']completedThrows[\"']\\s*:)|(?:const|let|var)\\s+(?P<level_alias>[A-Za-z_$][\\w$]*)\\s*=\\s*[^;\\n]{0,120}\\{[\\s\\S]{0,900}(?:requiredThrows\\s*:|[\"']requiredThrows[\"']\\s*:)[\\s\\S]{0,700}(?:remainingThrows\\s*:|[\"']remainingThrows[\"']\\s*:)[\\s\\S]{0,700}(?:completedThrows\\s*:|[\"']completedThrows[\"']\\s*:)[\\s\\S]{0,3000}(?:\\b(?P=level_alias)\\s*[,}]|(?:level\\s*:|[\"']level[\"']\\s*:)\\s*\\b(?P=level_alias)\\b))",
+        "(?:score\\s*:|[\"']score[\"']\\s*:)[\\s\\S]{0,650}(?:currentLevel\\s*:|[\"']currentLevel[\"']\\s*:)[\\s\\S]{0,650}(?:run\\s*:|[\"']run[\"']\\s*:)[\\s\\S]{0,650}(?:total\\s*:|[\"']total[\"']\\s*:)",
+        "(?:economy\\s*:|[\"']economy[\"']\\s*:)[\\s\\S]{0,650}(?:coins\\s*:|[\"']coins[\"']\\s*:)[\\s\\S]{0,650}(?:hearts\\s*:|[\"']hearts[\"']\\s*:)[\\s\\S]{0,650}(?:maxHearts\\s*:|[\"']maxHearts[\"']\\s*:)",
+        "(?:(?:entities\\s*:|[\"']entities[\"']\\s*:)[\\s\\S]{0,650}(?:stuckKnives\\s*:|[\"']stuckKnives[\"']\\s*:|\\bstuckKnives\\s*[,}])[\\s\\S]{0,650}(?:rewards\\s*:|[\"']rewards[\"']\\s*:|\\brewards\\s*[,}])|(?:const|let|var)\\s+entities\\s*=\\s*\\{[\\s\\S]{0,650}(?:stuckKnives\\s*:|[\"']stuckKnives[\"']\\s*:|\\bstuckKnives\\s*[,}])[\\s\\S]{0,650}(?:rewards\\s*:|[\"']rewards[\"']\\s*:|\\brewards\\s*[,}])[\\s\\S]{0,900}\\bentities\\s*[,}])",
+        "(?=[\\s\\S]*(?:shop\\s*:|[\"']shop[\"']\\s*:|\\.\\s*shop\\s*=|\\bshop\\s*[,}]))(?=[\\s\\S]*(?:items\\s*:|[\"']items[\"']\\s*:))(?=[\\s\\S]*(?:owned\\s*:|[\"']owned[\"']\\s*:|\\bowned\\s*[,}]))(?=[\\s\\S]*(?:affordable\\s*:|[\"']affordable[\"']\\s*:|\\baffordable\\s*[,}]))",
+        "(?:settings\\s*:|[\"']settings[\"']\\s*:)[\\s\\S]{0,900}(?:musicEnabled\\s*:|[\"']musicEnabled[\"']\\s*:|soundEnabled\\s*:|[\"']soundEnabled[\"']\\s*:|volume\\s*:|[\"']volume[\"']\\s*:)",
+        "(?=[\\s\\S]*(?:progression\\s*:|[\"']progression[\"']\\s*:|\\bprogression\\s*[,}]))(?=[\\s\\S]*(?:settlementReady\\s*:|[\"']settlementReady[\"']\\s*:))(?=[\\s\\S]*(?:rewardClaimedForCurrentCompletion\\s*:|[\"']rewardClaimedForCurrentCompletion[\"']\\s*:))",
+        "(?:feedback\\s*:|[\"']feedback[\"']\\s*:)[\\s\\S]{0,900}(?:lastEvent\\s*:|[\"']lastEvent[\"']\\s*:)[\\s\\S]{0,900}(?:visualRevision\\s*:|[\"']visualRevision[\"']\\s*:)[\\s\\S]{0,900}(?:hudRevision\\s*:|[\"']hudRevision[\"']\\s*:)"
+      ],
+      "fix_hint": "Snapshots must expose the TDD summaries required for trigger-to-result runtime checks."
+    },
+    {
+      "id": "p0-no-direct-cheat-contract-actions",
+      "level": "P0",
+      "name": "Public contract does not expose direct outcome mutation shortcuts",
+      "type": "regex_none",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*\\.\\s*(?:setScore|setCoins|setHearts|forceWin|forceFail|directHit|directMiss|directCollect|directClear|directBuy|directUnlock)\\s*=",
+        "__gameTest[\\s\\S]{0,1800}(?:setScore|setCoins|setHearts|forceWin|forceFail|directHit|directMiss|directCollect|directClear|directBuy|directUnlock)\\s*[:=]"
+      ],
+      "fix_hint": "The adapter may set legal scenarios, but it must not expose direct score, resource, win, fail, hit, collect, purchase, or unlock mutations."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

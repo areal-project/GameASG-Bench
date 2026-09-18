@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "checks": [
+    {
+      "id": "l1-public-game-test-object",
+      "level": "P0",
+      "name": "Public window.__gameTest object exists",
+      "type": "regex",
+      "patterns": [
+        "window\\s*\\.\\s*__gameTest\\s*=|window\\s*\\.\\s*__gameTest\\s*\\."
+      ],
+      "fix_hint": "Expose the TDD public test harness as window.__gameTest."
+    },
+    {
+      "id": "l1-public-reset-method",
+      "level": "P0",
+      "name": "window.__gameTest.reset exists",
+      "type": "regex",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement window.__gameTest.reset(options?) returning a public Snapshot."
+    },
+    {
+      "id": "l1-public-input-method",
+      "level": "P0",
+      "name": "window.__gameTest.input exists",
+      "type": "regex",
+      "patterns": [
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement window.__gameTest.input(action) for TDD player-level actions."
+    },
+    {
+      "id": "l1-public-get-snapshot-method",
+      "level": "P0",
+      "name": "window.__gameTest.getSnapshot exists",
+      "type": "regex",
+      "patterns": [
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement window.__gameTest.getSnapshot() returning the stable public Snapshot."
+    },
+    {
+      "id": "l1-public-load-scenario-method",
+      "level": "P0",
+      "name": "window.__gameTest.loadScenario exists",
+      "type": "regex",
+      "patterns": [
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement window.__gameTest.loadScenario(name, options?) for legal TDD preconditions."
+    },
+    {
+      "id": "l1-single-index-inline-output",
+      "level": "P0",
+      "name": "Runnable output is a single inline index.html without local runtime companions",
+      "type": "regex_none",
+      "patterns": [
+        "<script\\b[^>]*\\bsrc\\s*=\\s*[\"']\\s*(?!(?:https?:)?//)(?:\\./|/|[^\"']*(?:\\.js|\\.mjs))",
+        "<link\\b[^>]*\\brel\\s*=\\s*[\"']stylesheet[\"'][^>]*\\bhref\\s*=\\s*[\"']\\s*(?!(?:https?:)?//)(?:\\./|/|[^\"']*\\.css)",
+        "\\b(?:import\\s+[^;]*\\s+from\\s*[\"']\\s*\\./|import\\s*\\(\\s*[\"']\\s*\\./)"
+      ],
+      "fix_hint": "Place all first-party CSS and JavaScript inline in /envarena/workspace/index.html; do not reference local game.js/state.js/render.js/style.css files."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

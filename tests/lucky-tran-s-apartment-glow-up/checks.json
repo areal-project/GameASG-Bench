@@ -1,0 +1,127 @@
+{
+  "tool_checks": [
+    {
+      "id": "p0-html-script-structure",
+      "level": "P0",
+      "name": "HTML document exposes executable script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with executable inline or linked JavaScript.",
+      "required_tags": ["html", "script"]
+    },
+    {
+      "id": "p0-javascript-syntax-valid",
+      "level": "P0",
+      "name": "Inline and linked JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix inline and linked JavaScript syntax errors so the page can load."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-test-api-object",
+      "level": "P0",
+      "name": "Public __gameTest object exposes the required contract methods",
+      "type": "regex_all",
+      "fix_hint": "Expose window.__gameTest with reset, input, getSnapshot, and loadScenario.",
+      "patterns": [
+        "(?:(?:window|globalThis)\\s*\\.\\s*__gameTest|\\(\\s*typeof\\s+window\\b[^\\n;]*?\\?\\s*window\\s*:\\s*globalThis\\s*\\)\\s*\\.\\s*__gameTest)\\s*=\\s*(?:\\{\\s*|[A-Za-z_$][\\w$]*)",
+        "\\breset\\s*(?::\\s*(?:(?:async\\s*)?(?:function\\s*)?\\([^)]*\\)|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|\\([^)]*\\))",
+        "\\binput\\s*(?::\\s*(?:(?:async\\s*)?(?:function\\s*)?\\([^)]*\\)|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|\\([^)]*\\))",
+        "\\bgetSnapshot\\s*(?::\\s*(?:(?:async\\s*)?(?:function\\s*)?\\([^)]*\\)|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|\\([^)]*\\))",
+        "\\bloadScenario\\s*(?::\\s*(?:(?:async\\s*)?(?:function\\s*)?\\([^)]*\\)|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*)|\\([^)]*\\))"
+      ]
+    },
+    {
+      "id": "p0-snapshot-phase-result-envelope",
+      "level": "P0",
+      "name": "Snapshot envelope includes phase, screen, result, score, progress, visibility, feedback, and lastAction",
+      "type": "regex_all",
+      "fix_hint": "Return a stable public snapshot containing phase, screen, result, score, progress, visibility, feedback, and lastAction.",
+      "patterns": [
+        "\\{[\\s\\S]*phase\\s*:",
+        "\\{[\\s\\S]*screen\\s*:",
+        "\\{[\\s\\S]*result\\s*:",
+        "\\{[\\s\\S]*score\\s*:",
+        "\\{[\\s\\S]*progress\\s*:",
+        "\\{[\\s\\S]*visibility\\s*:",
+        "\\{[\\s\\S]*feedback\\s*:",
+        "\\{[\\s\\S]*lastAction\\s*:"
+      ]
+    },
+    {
+      "id": "p1-action-schema-player-contract",
+      "level": "P1",
+      "name": "Player-level action schema supports controls, room/wall/candidate choice, hold, playfield tap, and wait",
+      "type": "regex_all",
+      "fix_hint": "Implement player-level control, room/wall/candidate, hold, playfield, and wait actions through the public input contract.",
+      "patterns": [
+        "(?:case\\s*['\"]tap[Cc]ontrol['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]tap[Cc]ontrol['\"]|['\"]?tap[Cc]ontrol['\"]?\\s*:)",
+        "(?:case\\s*['\"]tap[Rr]oom['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]tap[Rr]oom['\"]|['\"]?tap[Rr]oom['\"]?\\s*:)",
+        "(?:case\\s*['\"]tap[Ww]all['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]tap[Ww]all['\"]|['\"]?tap[Ww]all['\"]?\\s*:)",
+        "(?:case\\s*['\"]tap[Cc]andidate['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]tap[Cc]andidate['\"]|['\"]?tap[Cc]andidate['\"]?\\s*:)",
+        "(?:case\\s*['\"]press[Ss]pot['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]press[Ss]pot['\"]|['\"]?press[Ss]pot['\"]?\\s*:)",
+        "(?:case\\s*['\"]tap[Pp]layfield['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]tap[Pp]layfield['\"]|['\"]?tap[Pp]layfield['\"]?\\s*:)",
+        "(?:case\\s*['\"]wait['\"]|(?:type|action\\.type)\\s*(?:===|==|:\\s*)\\s*['\"]wait['\"]|['\"]?wait['\"]?\\s*:)",
+        "\\b(?:target|action\\.target)\\b",
+        "\\b(?:room|action\\.room)\\b",
+        "\\b(?:wall|action\\.wall)\\b",
+        "\\b(?:candidateIndex|action\\.candidateIndex)\\b",
+        "\\b(?:spotRef|action\\.spotRef)\\b",
+        "\\b(?:durationMs|action\\.durationMs)\\b"
+      ]
+    },
+    {
+      "id": "p1-scenario-contract-preconditions",
+      "level": "P1",
+      "name": "Legal loadScenario preconditions are named and include start, selection, decorating, final, and showcase states",
+      "type": "regex_all",
+      "fix_hint": "Implement the listed loadScenario preconditions without applying the result being tested.",
+      "patterns": [
+        "\\bloadScenario\\s*(?::\\s*(?:async\\s*)?(?:function\\s*)?\\([^)]*\\bname\\b|\\([^)]*\\bname\\b)",
+        "(?:['\"]fresh_start['\"]|\\bfresh_start\\s*:)",
+        "(?:['\"]room_selection['\"]|\\broom_selection\\s*:)",
+        "(?:['\"]wall_selection['\"]|\\bwall_selection\\s*:)",
+        "(?:['\"]decorating_first_spot['\"]|\\bdecorating_first_spot\\s*:)",
+        "(?:['\"]decorating_mid_spot['\"]|\\bdecorating_mid_spot\\s*:)",
+        "(?:['\"]decorating_final_spot['\"]|\\bdecorating_final_spot\\s*:)",
+        "(?:['\"]showcase_complete['\"]|\\bshowcase_complete\\s*:)"
+      ]
+    },
+    {
+      "id": "p1-room-wall-candidate-snapshot-fields",
+      "level": "P1",
+      "name": "Snapshot summarizes rooms, wall choices, current spot, candidates, hold state, and semantic target zones",
+      "type": "regex_all",
+      "fix_hint": "Expose semantic room, wall, spot, candidate, hold, and target-zone summaries in getSnapshot.",
+      "patterns": [
+        "\\broomsAvailable\\s*:",
+        "['\"]living_room['\"]",
+        "['\"]bedroom['\"]",
+        "['\"]kitchen['\"]",
+        "\\bwallChoices\\s*:",
+        "\\bid\\s*(?::|[,}])[\\s\\S]*\\bselected\\s*(?::|[,}])",
+        "\\bcurrentSpot\\s*(?::|[,}])",
+        "\\bindex\\s*(?::|[,}])[\\s\\S]*\\btotal\\s*(?::|[,}])[\\s\\S]*\\bstate\\s*(?::|[,}])[\\s\\S]*\\btargetZoneId\\s*(?::|[,}])",
+        "\\bcandidateChoices\\s*(?::|[,}])",
+        "\\bindex\\s*(?::|[,}])[\\s\\S]*\\bselected\\s*(?::|[,}])[\\s\\S]*\\bvisible\\s*(?::|[,}])",
+        "hold\\s*:\\s*\\{[\\s\\S]*active\\s*(?::|[,}])[\\s\\S]*progress\\s*(?::|[,}])[\\s\\S]*canStart\\s*(?::|[,}])[\\s\\S]*targetZoneId\\s*(?::|[,}])",
+        "\\btargetZones\\s*:",
+        "(?:\\breturn\\s*\\{\\s*|\\b[A-Za-z_$][\\w$]*\\s*\\(\\s*\\{\\s*|\\b(?:const|let|var)\\s+[A-Za-z_$][\\w$]*\\s*=\\s*\\{\\s*)(?=[\\s\\S]{0,420}\\bid\\s*(?::|[,}]))(?=[\\s\\S]{0,420}\\bkind\\s*(?::|[,}]))(?=[\\s\\S]{0,420}\\benabled\\s*(?::|[,}]))(?=[\\s\\S]{0,420}\\bsemanticRef\\s*(?::|[,}]))(?=[\\s\\S]{0,420}\\bbounds\\s*(?::|[,}]))(?=[\\s\\S]{0,420}\\bcenter\\s*(?::|[,}]))"
+      ]
+    },
+    {
+      "id": "p1-rejection-envelope-contract",
+      "level": "P1",
+      "name": "Invalid actions return a rejection envelope instead of throwing or mutating protected state",
+      "type": "regex_all",
+      "fix_hint": "Reject invalid actions with an observable ok=false/reason envelope and preserve protected state.",
+      "patterns": [
+        "(?:function\\s+[A-Za-z_$][\\w$]*\\s*\\([^)]*\\)|\\b[A-Za-z_$][\\w$]*\\s*=)[\\s\\S]*\\bok\\s*:\\s*(?:false|[A-Za-z_$][\\w$]*)[\\s\\S]*\\breason\\s*(?:[:=]|(?=[,}]))",
+        "['\"](?:wrong_phase|invalid_target|no_selection|early_release|locked|complete|unsupported)['\"]",
+        "(score\\s*:[\\s\\S]*placedCount\\s*:[\\s\\S]*progress\\s*:|placedCount\\s*:[\\s\\S]*progress\\s*:[\\s\\S]*score\\s*:)"
+      ]
+    }
+  ]
+}

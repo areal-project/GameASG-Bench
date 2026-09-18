@@ -1,0 +1,144 @@
+{
+  "_doc": "GunGateGang L1 public TDD contract checks only",
+  "tool_checks": [
+    {
+      "id": "tool-html-entry",
+      "level": "P0",
+      "name": "Single HTML entry with script is present",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Provide a runnable HTML page with inline or linked JavaScript."
+    },
+    {
+      "id": "tool-js-syntax",
+      "level": "P0",
+      "name": "JavaScript parses without fatal syntax errors",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors so the page can boot."
+    },
+    {
+      "id": "tool-script-not-empty",
+      "level": "P0",
+      "name": "Game script is non-empty",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 2000,
+      "fix_hint": "Implement the game and public test contract in executable JavaScript."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-object",
+      "level": "P0",
+      "name": "Public __gameTest object is assigned",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*[^;\\n]*\\b(?:window|globalThis|self)\\b[^;\\n]*;[\\s\\S]{0,100000}\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=)"
+      ],
+      "fix_hint": "Expose the public TDD contract as window.__gameTest."
+    },
+    {
+      "id": "p0-public-api-methods",
+      "level": "P0",
+      "name": "__gameTest exposes reset/getSnapshot/input/loadScenario methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|(?:var|let|const)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*[^;\\n]*\\b(?:window|globalThis|self)\\b[^;\\n]*;[\\s\\S]{0,100000}\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:)",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement all four public methods with the TDD method names."
+    },
+    {
+      "id": "p1-snapshot-envelope-fields",
+      "level": "P1",
+      "name": "Snapshot envelope includes TDD state and interaction fields",
+      "type": "regex_all",
+      "patterns": [
+        "(?:ok\\s*:|['\"]ok['\"]\\s*:|\\bok\\s*[,}])[\\s\\S]{0,1600}(?:phase\\s*:|['\"]phase['\"]\\s*:|\\bphase\\s*[,}])[\\s\\S]{0,1200}(?:screen\\s*:|['\"]screen['\"]\\s*:|\\bscreen\\s*[,}])[\\s\\S]{0,1200}(?:result\\s*:|['\"]result['\"]\\s*:)",
+        "(?:canInteractWithPlayfield\\s*:|['\"]canInteractWithPlayfield['\"]\\s*:)[\\s\\S]{0,900}(?:overlayBlocking\\s*:|['\"]overlayBlocking['\"]\\s*:)",
+        "(?:score\\s*:|['\"]score['\"]\\s*:)[\\s\\S]{0,900}(?:finalScore\\s*:|['\"]finalScore['\"]\\s*:)[\\s\\S]{0,900}(?:wave\\s*:|['\"]wave['\"]\\s*:)[\\s\\S]{0,900}(?:difficultyTier\\s*:|['\"]difficultyTier['\"]\\s*:)"
+      ],
+      "fix_hint": "Return a complete Snapshot envelope with phase/screen/result, interaction, score, and progress fields."
+    },
+    {
+      "id": "p1-snapshot-summary-objects",
+      "level": "P1",
+      "name": "Snapshot includes team, weapon, world, HUD, feedback, and lastAction summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:team\\s*:|['\"]team['\"]\\s*:|\\bteam\\s*[,}]))(?=[\\s\\S]*(?:center\\s*:|['\"]center['\"]\\s*:))(?=[\\s\\S]*(?:screenX\\s*:|['\"]screenX['\"]\\s*:))(?=[\\s\\S]*(?:horizontalVelocitySign\\s*:|['\"]horizontalVelocitySign['\"]\\s*:))",
+        "(?=[\\s\\S]*(?:weapon\\s*:|['\"]weapon['\"]\\s*:|\\bweapon\\s*[,}]))(?=[\\s\\S]*(?:isDefault\\s*:|['\"]isDefault['\"]\\s*:))(?=[\\s\\S]*(?:fireCadenceClass\\s*:|['\"]fireCadenceClass['\"]\\s*:))(?=[\\s\\S]*(?:rangeClass\\s*:|['\"]rangeClass['\"]\\s*:))(?=[\\s\\S]*(?:coverageClass\\s*:|['\"]coverageClass['\"]\\s*:))",
+        "(?=[\\s\\S]*(?:world\\s*:|['\"]world['\"]\\s*:|\\bworld\\s*[,}]))(?=[\\s\\S]*(?:playfield\\s*:|['\"]playfield['\"]\\s*:))(?=[\\s\\S]*(?:projectiles\\s*:|['\"]projectiles['\"]\\s*:))(?=[\\s\\S]*(?:worldMotionRevision\\s*:|['\"]worldMotionRevision['\"]\\s*:))",
+        "(?=[\\s\\S]*(?:hud\\s*:|['\"]hud['\"]\\s*:|\\bhud\\s*[,}]))(?=[\\s\\S]*(?:matchesSnapshot\\s*:|['\"]matchesSnapshot['\"]\\s*:))(?=[\\s\\S]*(?:feedback\\s*:|['\"]feedback['\"]\\s*:))(?=[\\s\\S]*(?:lastAction\\s*:|['\"]lastAction['\"]\\s*:))"
+      ],
+      "fix_hint": "Expose stable public summaries for visible team, weapon, world, HUD, feedback, and action rejection state."
+    },
+    {
+      "id": "p1-player-action-contract",
+      "level": "P1",
+      "name": "Public input contract recognizes required player-level action types",
+      "type": "regex_all",
+      "patterns": [
+        "(?:case\\s+['\"]start['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]start['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]start['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]start['\"])",
+        "(?:case\\s+['\"]restart['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]restart['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]restart['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]restart['\"])",
+        "(?:case\\s+['\"]holdDirection['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]holdDirection['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]holdDirection['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]holdDirection['\"])",
+        "(?:case\\s+['\"]releaseDirection['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]releaseDirection['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]releaseDirection['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]releaseDirection['\"])",
+        "(?:case\\s+['\"]tapSide['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]tapSide['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]tapSide['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]tapSide['\"])",
+        "(?:case\\s+['\"]pressKey['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]pressKey['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]pressKey['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]pressKey['\"])",
+        "(?:case\\s+['\"]wait['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]wait['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]wait['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]wait['\"])",
+        "(?:case\\s+['\"]pause['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]pause['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]pause['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]pause['\"])",
+        "(?:case\\s+['\"]resume['\"]\\s*:|\\b(?:action|a|t|ty|tp|type)\\s*={2,3}\\s*['\"]resume['\"]|\\b(?:action|a)\\s*\\.\\s*type\\s*={2,3}\\s*['\"]resume['\"]|(?:\\btype|['\"]type['\"])\\s*[:=]\\s*['\"]resume['\"])"
+      ],
+      "fix_hint": "Route __gameTest.input(action) through the TDD player-level action names, including rejection for unsupported optional actions."
+    },
+    {
+      "id": "p1-scenario-contract",
+      "level": "P1",
+      "name": "loadScenario supports required legal setup names",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]fresh_menu['\"]|\\bfresh_menu\\b\\s*:|['\"]fresh_menu['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]fresh_run['\"]|\\bfresh_run\\b\\s*:|['\"]fresh_run['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]gate_choice['\"]|\\bgate_choice\\b\\s*:|['\"]gate_choice['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]shootable_gate['\"]|\\bshootable_gate\\b\\s*:|['\"]shootable_gate['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]obstacle_weapon['\"]|\\bobstacle_weapon\\b\\s*:|['\"]obstacle_weapon['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]enemy_pressure['\"]|\\benemy_pressure\\b\\s*:|['\"]enemy_pressure['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]near_failure['\"]|\\bnear_failure\\b\\s*:|['\"]near_failure['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]weapon_upgrade_comparison['\"]|\\bweapon_upgrade_comparison\\b\\s*:|['\"]weapon_upgrade_comparison['\"]\\s*[,\\]])",
+        "(?:(?:case\\s+|(?:else\\s+)?if\\s*\\([^\\n]*|\\b)['\"]post_result['\"]|\\bpost_result\\b\\s*:|['\"]post_result['\"]\\s*[,\\]])"
+      ],
+      "fix_hint": "Implement legal loadScenario(name) setup states declared by the TDD without pre-applying their outcomes."
+    },
+    {
+      "id": "p2-boss-scenario-contract",
+      "level": "P2",
+      "name": "P2 boss pressure scenario is publicly declared",
+      "type": "regex_any",
+      "patterns": [
+        "(?:['\"]boss_pressure['\"]|\\bboss_pressure\\b)"
+      ],
+      "fix_hint": "Expose boss_pressure if implementing the P2 boss loop."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "anti-private-only-score-setters",
+      "level": "P1",
+      "name": "Public test API must not expose direct score/result cheat setters",
+      "type": "regex_none",
+      "patterns": [
+        "__gameTest[\\s\\S]{0,2000}(?:setScore|forceScore|setResult|forceWin|forceLose)\\s*[:=]"
+      ],
+      "fix_hint": "Keep __gameTest player-level; use loadScenario for legal preconditions, not direct score/result setters."
+    }
+  ]
+}

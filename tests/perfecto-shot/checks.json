@@ -1,0 +1,129 @@
+{
+  "_doc": "perfecto-shot public TDD contract static checks",
+  "_source": "task/perfecto-shot/tdd.md",
+  "_scope": "L1 checks only TDD-defined public interface contracts. Gameplay behavior is tested by L2 checks.js.",
+  "tool_checks": [
+    {
+      "id": "tool-html-entry",
+      "level": "P0",
+      "name": "HTML entry and executable script surface are present",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Expose the game from a normal HTML entry with executable JavaScript."
+    },
+    {
+      "id": "tool-js-syntax",
+      "level": "P0",
+      "name": "Linked and inline JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors in the HTML entry or linked local scripts."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-envelope",
+      "level": "P0",
+      "name": "Public __gameTest envelope exposes required TDD methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Define window.__gameTest with reset, getSnapshot, input, and loadScenario as public contract methods."
+    },
+    {
+      "id": "p0-snapshot-state-envelope",
+      "level": "P0",
+      "name": "Snapshot contract exposes state, overlay, level, playfield and feedback envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "\\bphase\\s*[:=]\\s*[\"'](?:boot|lobby|ready|aiming|moving|paused|levelSelect|success|failed)[\"']|phase\\s*[:=]\\s*[^,;\\n]+",
+        "\\bscreen\\s*[:=]\\s*[\"'](?:lobby|playing|pauseMenu|levelSelect|success|failed)[\"']|screen\\s*[:=]\\s*[^,;\\n]+",
+        "\\boverlay\\s*:\\s*(?:\\{[\\s\\S]{0,1400}\\b(?:active|kind|blocksPlayfield)\\s*[:=]|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*(?:\\s*\\([^)]*\\))?\\s*(?=[,}\\n;]))",
+        "\\bplayfield\\s*:\\s*\\{[\\s\\S]{0,1400}\\b(?:bounds|visualReady|orientation)\\s*[:=]",
+        "\\bfeedback\\s*:\\s*(?:\\{[\\s\\S]{0,1800}\\b(?:hudVisible|shotCountVisible|aimingGuideVisible|successFeedbackVisible|failureFeedbackVisible)\\s*[:=]|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*(?:\\s*\\([^)]*\\))?\\s*(?=[,}\\n;]))"
+      ],
+      "fix_hint": "Return the TDD Snapshot state envelopes for phase/screen/overlay/playfield/feedback."
+    },
+    {
+      "id": "p1-action-schema-slingshot-and-menu",
+      "level": "P1",
+      "name": "Action schema includes slingshot, wait, retry, pause and level actions",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']dragBall[\"']|[\"']dragBall[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']dragFromPoint[\"']|[\"']dragFromPoint[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']cancelAim[\"']|[\"']cancelAim[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']wait[\"']|[\"']wait[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']retry[\"']|[\"']retry[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']openPause[\"']|[\"']openPause[\"']\\s*[,\\]}]",
+        "(?:\\btype\\s*[:=]\\s*|\\bcase\\s+|[A-Za-z_$][\\w$]*(?:\\s*\\.\\s*[A-Za-z_$][\\w$]*)*\\s*(?:===|==)\\s*)[\"']selectLevel[\"']|[\"']selectLevel[\"']\\s*[,\\]}]"
+      ],
+      "fix_hint": "Support the TDD action.type values for player-level slingshot, wait, retry, pause and level flow."
+    },
+    {
+      "id": "p1-scenario-contracts-legal-preconditions",
+      "level": "P1",
+      "name": "Scenario names expose legal preconditions for core mechanics",
+      "type": "regex_all",
+      "patterns": [
+        "(?:loadScenario\\s*\\([^)]*[\"']simple_shot_start[\"']|[\"']simple_shot_start[\"']|\\bsimple_shot_start\\s*:)",
+        "(?:loadScenario\\s*\\([^)]*[\"']multi_target_start[\"']|[\"']multi_target_start[\"']|\\bmulti_target_start\\s*:)",
+        "(?:loadScenario\\s*\\([^)]*[\"']out_of_bounds_risk_start[\"']|[\"']out_of_bounds_risk_start[\"']|\\bout_of_bounds_risk_start\\s*:)",
+        "(?:loadScenario\\s*\\([^)]*[\"']near_completion_start[\"']|[\"']near_completion_start[\"']|\\bnear_completion_start\\s*:)",
+        "(?:loadScenario\\s*\\([^)]*[\"']menu_flow_start[\"']|[\"']menu_flow_start[\"']|\\bmenu_flow_start\\s*:|\\bmenu_flow_start\\s*=)"
+      ],
+      "fix_hint": "Expose TDD loadScenario names as legal setup states without pre-applying launch, score, failure, or terminal results."
+    },
+    {
+      "id": "p1-ball-basket-motion-observability",
+      "level": "P1",
+      "name": "Snapshot exposes ball, basket, obstacle and motion summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\bballs\\s*:\\s*\\[[\\s\\S]{0,2200}\\b(?:screenX|screenY|bounds|state|moving|completed|lastLaunchDirection|motionRevision)\\s*[:=])|(?:(?:\\b(?:var|let|const)\\s+balls\\s*=|\\bballs\\s*\\.\\s*(?:map|push)\\s*\\()[\\s\\S]{0,2200}\\b(?:screenX|screenY|bounds|state|moving|completed|lastLaunchDirection|motionRevision)\\s*[:=]))",
+        "\\bbaskets\\s*:\\s*\\[[\\s\\S]{0,1800}\\b(?:color|bounds|occupiedByBallId|completed)\\s*[:=]",
+        "(?:(?:\\bobstacles\\s*:\\s*\\[[\\s\\S]{0,1600}\\b(?:kind|bounds|affectsMotion)\\s*[:=])|(?:(?:\\b(?:var|let|const)\\s+obstacles\\s*=|\\bobstacles\\s*\\.\\s*(?:map|push)\\s*\\(|\\bobstacles\\s*:\\s*)[\\s\\S]{0,1600}\\b(?:kind|bounds|affectsMotion)\\s*[:=]))",
+        "\\brevision\\s*:\\s*\\{[\\s\\S]{0,1000}\\b(?:playfield|physics|ui)\\s*[:=]"
+      ],
+      "fix_hint": "Expose public summaries for visible balls, baskets, obstacles and motion/revision evidence."
+    },
+    {
+      "id": "p1-shot-rating-and-result-contract",
+      "level": "P1",
+      "name": "Snapshot exposes shot count, target progress, result and rating fields",
+      "type": "regex_all",
+      "patterns": [
+        "\\bshotCount\\s*[:=]\\s*[^,;\\n]+",
+        "\\blevel\\s*:\\s*(?:\\{[\\s\\S]{0,1400}\\b(?:targetCount|completedTargetCount)\\s*[:=]|[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*(?:\\([^)]*\\))?\\s*(?:[,}\\n]))",
+        "\\btargetCount\\s*[:=]",
+        "\\bcompletedTargetCount\\s*[:=]",
+        "\\bresult\\s*[:=]\\s*[\"'](?:none|success|failed|allComplete)[\"']|result\\s*[:=]\\s*[^,;\\n]+",
+        "\\bstars\\s*[:=]\\s*[^,;\\n]+|\\brating\\s*[:=]\\s*[^,;\\n]+"
+      ],
+      "fix_hint": "Expose shotCount, target completion progress, result, and stars or equivalent rating in the Snapshot."
+    },
+    {
+      "id": "p1-blocking-controls-contract",
+      "level": "P1",
+      "name": "Snapshot exposes blocking overlay and semantic controls",
+      "type": "regex_all",
+      "patterns": [
+        "\\bcanInteractWithPlayfield\\s*[:=]\\s*(?:true|false|[^,;\\n]+)",
+        "\\bblocksPlayfield\\s*[:=]\\s*(?:true|false|[^,;\\n]+)",
+        "(?:\\bcontrols\\s*:\\s*\\{[\\s\\S]{0,1800}\\b(?:startAvailable|retryAvailable|pauseAvailable|resumeAvailable|levelSelectAvailable|nextAvailable)\\s*[:=]|\\bcontrols\\s*:\\s*[A-Za-z_$][\\w$]*\\s*\\([^)]*\\))",
+        "\\b(?:startAvailable|retryAvailable|pauseAvailable|resumeAvailable|levelSelectAvailable|nextAvailable)\\s*[:=]"
+      ],
+      "fix_hint": "Expose playfield interactivity, overlay blocking, and semantic control availability."
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "game": "kick-skills",
+  "description": "L1 public TDD contract checks for Kick Skills. These checks only validate the portable test interface shape declared in task/kick-skills/tdd.md.",
+  "tool_checks": [
+    {
+      "id": "p0-html-script-present",
+      "level": "P0",
+      "name": "HTML document includes executable script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with executable inline or linked JavaScript.",
+      "required_tags": [
+        "html",
+        "script"
+      ]
+    },
+    {
+      "id": "p0-js-syntax-valid",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors so inline and linked scripts parse successfully."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed on the window",
+      "type": "regex_any",
+      "fix_hint": "Expose window.__gameTest as the public TDD adapter with the required game-test methods.",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=",
+        "Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[^}]*__gameTest\\s*:"
+      ]
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "TDD public contract exposes reset, loadScenario, input, and getSnapshot methods",
+      "type": "regex_all",
+      "fix_hint": "Expose reset, input, getSnapshot, and loadScenario on the public TDD adapter.",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ]
+    },
+    {
+      "id": "p1-snapshot-envelope-schema",
+      "level": "P1",
+      "name": "Snapshot envelope includes TDD state, run, shot, scene, and lastAction schema fields",
+      "type": "regex_all",
+      "fix_hint": "Return a stable snapshot envelope with the required state, run, shot, scene, and lastAction fields.",
+      "patterns": [
+        "(?:phase|screen|activePanel)\\s*[:=][\\s\\S]{0,500}(?:overlayBlocking|canShoot|canRestart)\\s*[:=]",
+        "run\\s*[:=]\\s*\\{[\\s\\S]{0,900}(?:challengeIndex|challengeCount)[\\s\\S]{0,900}(?:attemptsRemaining|result)\\s*[:=]",
+        "shot\\s*[:=]\\s*\\{[\\s\\S]{0,900}(?:state|validCharge)[\\s\\S]{0,900}(?:pullDirection|launchTrend|resolution)\\s*[:=]",
+        "scene\\s*[:=]\\s*\\{[\\s\\S]{0,900}(?:playfield|ballBounds)[\\s\\S]{0,900}(?:obstacleCounts|renderReady|primaryViewNonBlank)\\s*[:=]",
+        "lastAction\\s*[:=]\\s*\\{[\\s\\S]{0,500}(?:ok|type|reason)\\s*[:=]"
+      ]
+    },
+    {
+      "id": "p1-action-envelope-schema",
+      "level": "P1",
+      "name": "Input action contract recognizes player-level action type families and rejection envelope",
+      "type": "regex_all",
+      "fix_hint": "Route player-level action types through input and return the documented rejection envelope for invalid actions.",
+      "patterns": [
+        "(?:action|input)\\s*\\.[\\s\\S]{0,120}(?:type)|(?:type)\\s*[:=][\\s\\S]{0,400}(?:start|restart|dragShot|beginDrag|releaseDrag|wait)",
+        "(?:openPanel|closePanel|selectShopItem|buySelected|toggleSetting|confirmStorageReset)",
+        "(?:lastAction|reason)\\s*[:=][\\s\\S]{0,600}(?:blockedOverlay|notReady|weakDrag|inFlight|terminal|insufficientCoins|invalidAction)"
+      ]
+    },
+    {
+      "id": "p1-scenario-contract-enum",
+      "level": "P1",
+      "name": "loadScenario supports declared legal TDD scenario names",
+      "type": "regex_all",
+      "fix_hint": "Implement the declared loadScenario names as legal setup states without preloading outcomes.",
+      "patterns": [
+        "(?:loadScenario[\\s\\S]*(?:fresh_start|basic_target_ready|wall_obstacle_ready)|(?:fresh_start|basic_target_ready|wall_obstacle_ready)[\\s\\S]*loadScenario)",
+        "(?:loadScenario[\\s\\S]*(?:moving_target_ready|goalkeeper_ready|hole_gate_ready)|(?:moving_target_ready|goalkeeper_ready|hole_gate_ready)[\\s\\S]*loadScenario)",
+        "(?:loadScenario[\\s\\S]*(?:one_attempt_ready|shop_open_ready|settings_open_ready|leaderboard_open_ready)|(?:one_attempt_ready|shop_open_ready|settings_open_ready|leaderboard_open_ready)[\\s\\S]*loadScenario)"
+      ]
+    },
+    {
+      "id": "p1-contract-direction-opposite",
+      "level": "P1",
+      "name": "Public contract includes opposite-direction drag evidence fields",
+      "type": "regex_all",
+      "fix_hint": "Expose observable launch and landing direction evidence that changes consistently for opposite drags.",
+      "patterns": [
+        "(?:leftBack[\\s\\S]{0,2000}rightBack|rightBack[\\s\\S]{0,2000}leftBack)",
+        "(?:launchTrend|lastLandingTrend|directionTrend)",
+        "(?:screenX|screenY|lastLandingTrend)"
+      ]
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

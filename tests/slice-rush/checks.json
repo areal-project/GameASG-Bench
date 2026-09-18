@@ -1,0 +1,121 @@
+{
+  "_doc": "Slice Rush L1 public TDD contract checks",
+  "tool_checks": [
+    {
+      "id": "tool-html-script-structure",
+      "level": "P0",
+      "name": "HTML entry exposes script content",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "fix_hint": "Provide a runnable HTML entry with html, body, and script tags and an executable game script.",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ]
+    },
+    {
+      "id": "tool-js-syntax-valid",
+      "level": "P0",
+      "name": "JavaScript parses without syntax errors",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors so the game script parses and can boot."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-api-methods",
+      "level": "P0",
+      "name": "window.__gameTest exposes reset/input/getSnapshot/loadScenario methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose the TDD public API as window.__gameTest with reset, input, getSnapshot, and loadScenario player-level methods."
+    },
+    {
+      "id": "p0-snapshot-top-level-schema",
+      "level": "P0",
+      "name": "Snapshot builder returns required top-level contract fields",
+      "type": "regex_all",
+      "patterns": [
+        "(?:return\\s*\\{|const\\s+snapshot\\s*=\\s*\\{|let\\s+snapshot\\s*=\\s*\\{)[\\s\\S]{0,2200}\\bready\\s*:[\\s\\S]{0,2200}\\bphase\\s*:[\\s\\S]{0,2200}\\bmode\\s*:[\\s\\S]{0,2200}\\bresult\\s*:",
+        "(?:(?:return\\s*\\{|const\\s+snapshot\\s*=\\s*\\{|let\\s+snapshot\\s*=\\s*\\{)[\\s\\S]{0,2600}\\boverlay\\s*:\\s*\\{[\\s\\S]{0,900}\\bblocksPlayfield\\s*:|(?:const|let|var)\\s+(?P<overlayAlias>[A-Za-z_$][\\w$]*)\\s*=\\s*\\{[\\s\\S]{0,1200}\\bblocksPlayfield\\s*:[\\s\\S]{0,5000}(?:\\boverlay\\s*:\\s*(?P=overlayAlias)\\b|\\b(?P=overlayAlias)\\s*,))",
+        "(?:(?:return\\s*\\{|const\\s+snapshot\\s*=\\s*\\{|let\\s+snapshot\\s*=\\s*\\{)[\\s\\S]{0,2600}\\bcontrols\\s*:\\s*\\{[\\s\\S]{0,1200}\\bcanPlayfieldTap\\s*:|(?:const|let|var)\\s+(?P<controlsAlias>[A-Za-z_$][\\w$]*)\\s*=\\s*\\{[\\s\\S]{0,1200}\\bcanPlayfieldTap\\s*:[\\s\\S]{0,5000}(?:\\bcontrols\\s*:\\s*(?P=controlsAlias)\\b|\\b(?P=controlsAlias)\\s*,)|function\\s+(?P<controlsFn>[A-Za-z_$][\\w$]*)\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,1600}\\bcanPlayfieldTap\\s*:[\\s\\S]{0,1600}\\}[\\s\\S]{0,5000}(?:const|let|var)\\s+(?P<controlsResult>[A-Za-z_$][\\w$]*)\\s*=\\s*(?P=controlsFn)\\s*\\([^)]*\\)[\\s\\S]{0,5000}\\bcontrols\\s*:\\s*(?P=controlsResult)\\b|(?:const|let|var)\\s+(?P<stateAlias>[A-Za-z_$][\\w$]*)\\s*=\\s*\\{[\\s\\S]{0,60000}\\bcontrols\\s*:\\s*\\{[\\s\\S]{0,1200}\\bcanPlayfieldTap\\s*:[\\s\\S]{0,60000}\\bcontrols\\s*:\\s*\\{\\s*\\.\\.\\.(?P=stateAlias)\\.controls\\b)"
+      ],
+      "fix_hint": "Build getSnapshot/reset/input responses with ready, phase, mode, result, overlay.blocksPlayfield, and controls.canPlayfieldTap."
+    },
+    {
+      "id": "p1-scene-hud-knife-route-entity-schema",
+      "level": "P1",
+      "name": "Snapshot includes scene, HUD, knife, route, and entity observability groups",
+      "type": "regex_all",
+      "patterns": [
+        "\\bscene\\s*:\\s*\\{[\\s\\S]{0,1400}\\breadable3D\\s*:[\\s\\S]{0,1400}\\bgameplayVisualRevision\\s*:",
+        "\\bhud\\s*:\\s*\\{[\\s\\S]{0,1400}\\bscore\\s*:[\\s\\S]{0,1400}\\btargetScore\\s*:[\\s\\S]{0,1400}\\bcoins\\s*:",
+        "(?:\\bknife\\s*:\\s*(?:\\{[\\s\\S]{0,1800}\\bstate\\s*:[\\s\\S]{0,1800}\\bprogress\\s*:[\\s\\S]{0,1800}\\bheight\\s*:[\\s\\S]{0,1800}\\brotationTurns\\s*:|[A-Za-z_$][\\w$]*\\s*\\?\\s*\\{[\\s\\S]{0,1800}\\bstate\\s*:[\\s\\S]{0,1800}\\bprogress\\s*:[\\s\\S]{0,1800}\\bheight\\s*:[\\s\\S]{0,1800}\\brotationTurns\\s*:)|\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*\\{[\\s\\S]{0,1800}\\bstate\\s*:[\\s\\S]{0,1800}\\bprogress\\s*:[\\s\\S]{0,1800}\\bheight\\s*:[\\s\\S]{0,1800}\\brotationTurns\\s*:[\\s\\S]{0,1800}\\}[\\s\\S]{0,1800}\\bknife\\s*:\\s*\\1\\b)",
+        "\\broute\\s*:\\s*\\{[\\s\\S]{0,1200}\\bnextPlatformVisible\\s*:[\\s\\S]{0,1200}\\bmovingElementsRevision\\s*:",
+        "\\bentities\\s*:\\s*\\{[\\s\\S]{0,1600}\\bsliceableVisible\\s*:[\\s\\S]{0,1600}\\bhazardVisible\\s*:[\\s\\S]{0,1600}\\bcutRevision\\s*:"
+      ],
+      "fix_hint": "Expose TDD snapshot observability for readable scene, HUD, knife motion/contact, route, sliceables, hazards, and cut revision."
+    },
+    {
+      "id": "p1-input-action-schema-handles-core-actions",
+      "level": "P1",
+      "name": "input(action) handles player-level core action types",
+      "type": "regex_all",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]chooseMode['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]chooseMode['\"]|\\bt\\s*===?\\s*['\"]chooseMode['\"]|\\btype\\s*===?\\s*['\"]chooseMode['\"]|['\"]chooseMode['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]playfieldTap['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]playfieldTap['\"]|\\bt\\s*===?\\s*['\"]playfieldTap['\"]|\\btype\\s*===?\\s*['\"]playfieldTap['\"]|['\"]playfieldTap['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]wait['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]wait['\"]|\\bt\\s*===?\\s*['\"]wait['\"]|\\btype\\s*===?\\s*['\"]wait['\"]|['\"]wait['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]pause['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]pause['\"]|\\bt\\s*===?\\s*['\"]pause['\"]|\\btype\\s*===?\\s*['\"]pause['\"]|['\"]pause['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]resume['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]resume['\"]|\\bt\\s*===?\\s*['\"]resume['\"]|\\btype\\s*===?\\s*['\"]resume['\"]|['\"]resume['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\"]__gameTest['\"]\\s*\\])\\s*=)(?=[\\s\\S]*(?:(?:\\binput\\b|['\"]input['\"])\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*action[^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bfunction\\s+input\\s*\\([^)]*action|\\binput\\s*\\([^)]*action))(?=[\\s\\S]*(?:case\\s*['\"]retry['\"]|\\b(?:action|a|t)\\s*\\.\\s*type\\s*===?\\s*['\"]retry['\"]|\\bt\\s*===?\\s*['\"]retry['\"]|\\btype\\s*===?\\s*['\"]retry['\"]|['\"]retry['\"]\\s*:))"
+      ],
+      "fix_hint": "Implement __gameTest.input as player-level actions for mode choice, playfield tap, wait, pause, resume, and retry."
+    },
+    {
+      "id": "p1-scenario-schema-legal-preconditions",
+      "level": "P1",
+      "name": "loadScenario supports TDD legal precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?:loadScenario[\\s\\S]*(?:['\"]fresh_start['\"]|\\bfresh_start\\b)|(?:['\"]fresh_start['\"]|\\bfresh_start\\b)[\\s\\S]*loadScenario)",
+        "(?:loadScenario[\\s\\S]*(?:['\"]level_ready['\"]|\\blevel_ready\\b)|(?:['\"]level_ready['\"]|\\blevel_ready\\b)[\\s\\S]*loadScenario)",
+        "(?:loadScenario[\\s\\S]*(?:['\"]approach_sliceable['\"]|\\bapproach_sliceable\\b)|(?:['\"]approach_sliceable['\"]|\\bapproach_sliceable\\b)[\\s\\S]*loadScenario)",
+        "(?:loadScenario[\\s\\S]*(?:['\"]hazard_ahead['\"]|\\bhazard_ahead\\b)|(?:['\"]hazard_ahead['\"]|\\bhazard_ahead\\b)[\\s\\S]*loadScenario)",
+        "^(?![\\s\\S]*(?:['\"]near_finish_score_met['\"]|\\bnear_finish_score_met\\b)[\\s\\S]{0,1400}(?:\\b(?:state|S|G|State)\\s*(?:\\.\\s*hud\\s*)?\\.?score\\s*=|\\bscore\\s*=|\\btargetScore\\s*=|\\bscoreGoalReached\\s*=|\\b(?:setupFinish|scNearFinish|grantSliceScore|applyScenarioSlices|sliceTarget)\\s*\\())[\\s\\S]*(?:loadScenario[\\s\\S]*(?:['\"]near_finish_score_met['\"]|\\bnear_finish_score_met\\b)|(?:['\"]near_finish_score_met['\"]|\\bnear_finish_score_met\\b)[\\s\\S]*loadScenario)",
+        "^(?![\\s\\S]*(?:['\"]near_finish_score_short['\"]|\\bnear_finish_score_short\\b)[\\s\\S]{0,1400}(?:\\b(?:state|S|G|State)\\s*(?:\\.\\s*hud\\s*)?\\.?score\\s*=|\\bscore\\s*=|\\btargetScore\\s*=|\\bscoreGoalReached\\s*=|\\b(?:setupFinish|scNearFinish|grantSliceScore|applyScenarioSlices|sliceTarget)\\s*\\())[\\s\\S]*(?:loadScenario[\\s\\S]*(?:['\"]near_finish_score_short['\"]|\\bnear_finish_score_short\\b)|(?:['\"]near_finish_score_short['\"]|\\bnear_finish_score_short\\b)[\\s\\S]*loadScenario)"
+      ],
+      "fix_hint": "Provide TDD loadScenario legal setup states without pre-applying the result under test."
+    },
+    {
+      "id": "p1-rejection-envelope-or-stable-snapshot",
+      "level": "P1",
+      "name": "Invalid actions reject without throw and preserve a snapshot",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:\\bok\\s*[:=]\\s*false\\b[\\s\\S]{0,800}\\breason\\s*[:=])|(?:\\bok\\s*[:=]\\s*[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*[\\s\\S]{0,1200}\\breason\\s*[:=])|(?:\\A(?=[\\s\\S]*\\binput\\b)(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*?(?:invalid|unknown|blocked|locked|unavailable|notAvailable|rejected|!action|default\\s*:|catch\\s*\\()[\\s\\S]{0,1200}(?:return\\s+)?(?:getSnapshot|makeSnapshot|snapshot)\\s*\\())",
+        "(?:(?:\\bok\\s*[:=]\\s*false\\b[\\s\\S]{0,1200}\\bsnapshot\\s*:)|(?:\\bok\\s*[:=]\\s*[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*[\\s\\S]{0,1200}\\bsnapshot\\s*:)|(?:\\A(?=[\\s\\S]*\\binput\\b)(?=[\\s\\S]*\\bloadScenario\\b)[\\s\\S]*?(?:invalid|unknown|blocked|locked|unavailable|notAvailable|rejected|!action|default\\s*:|catch\\s*\\()[\\s\\S]{0,1200}(?:return\\s+)?(?:getSnapshot|makeSnapshot|snapshot)\\s*\\())"
+      ],
+      "fix_hint": "Accept either the documented plain stable-snapshot rejection or a computed/helper-backed ok:false envelope, while preserving no-throw and unchanged-state semantics."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "anti-private-source-contract-shortcut",
+      "level": "P1",
+      "name": "No source-private globals are required as public contract",
+      "type": "regex_none",
+      "patterns": [
+        "window\\.(?:gameState|knifeGroup|sliceableObjects|stuckPlatformRef|knifeVelocity)\\s*="
+      ],
+      "fix_hint": "Expose only the implementation-neutral __gameTest snapshot/action contract, not private object graphs or source variable names."
+    }
+  ]
+}

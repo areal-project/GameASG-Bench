@@ -1,0 +1,113 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "sortie public TDD contract static checks",
+  "_source": "task/sortie/tdd.md",
+  "_scope": "L1 checks only validate the TDD public interface contract. Gameplay behavior is covered by tests/sortie/checks.js.",
+  "tool_checks": [
+    {
+      "id": "p0-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML entry exposes a script runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Provide an HTML entry with executable game script."
+    },
+    {
+      "id": "p0-javascript-syntax",
+      "level": "P0",
+      "name": "Inline and linked JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors in the game entry."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-game-test-envelope",
+      "level": "P0",
+      "name": "Public __gameTest envelope exposes reset, input, getSnapshot, and loadScenario",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=|Object\\.assign\\s*\\(\\s*(?:window|globalThis|self)\\s*,\\s*\\{[\\s\\S]{0,800}__gameTest\\s*:|\\(\\s*function\\s*\\(\\s*([A-Za-z_$][\\w$]*)\\s*\\)\\s*\\{[\\s\\S]{0,1000}\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*['\\\"]__gameTest['\\\"]\\s*\\])\\s*=\\s*[\\s\\S]{0,300}\\}\\s*\\)\\s*\\([\\s\\S]{0,300}(?:window|globalThis|self)[\\s\\S]{0,300}\\))",
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Expose the TDD-defined adapter as window.__gameTest with all four public methods."
+    },
+    {
+      "id": "p1-snapshot-ui-envelope",
+      "level": "P1",
+      "name": "Snapshot returns UI phase, panel blocking, level, playfield, controls, feedback, and lastAction groups",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:return\\b[^;{}]{0,250}\\{|(?:var|let|const)\\s+[A-Za-z_$][\\w$]*\\s*=\\s*\\{))[\\s\\S]{0,1400}(?:phase\\s*(?=,|})|phase\\s*:|['\"]phase['\"]\\s*:)[\\s\\S]{0,450}(?:screen\\s*(?=,|})|screen\\s*:|['\"]screen['\"]\\s*:)[\\s\\S]{0,450}(?:activePanel\\s*(?=,|})|activePanel\\s*:|['\"]activePanel['\"]\\s*:)",
+        "(?:overlayBlocking\\s*(?=,|})|overlayBlocking\\s*:|['\"]overlayBlocking['\"]\\s*:)[\\s\\S]{0,450}(?:canInteractWithPlayfield\\s*(?=,|})|canInteractWithPlayfield\\s*:|['\"]canInteractWithPlayfield['\"]\\s*:)",
+        "(?:level\\s*:|['\"]level['\"]\\s*:)\\s*\\{[\\s\\S]{0,1300}(?:index\\s*:|['\"]index['\"]\\s*:)[\\s\\S]{0,450}(?:p1LevelCount\\s*:|['\"]p1LevelCount['\"]\\s*:)[\\s\\S]{0,450}(?:completedCount\\s*:|['\"]completedCount['\"]\\s*:)",
+        "(?:playfield\\s*:|['\"]playfield['\"]\\s*:)\\s*\\{[\\s\\S]{0,1200}(?:bounds\\s*:|['\"]bounds['\"]\\s*:)[\\s\\S]{0,450}(?:visibleRevision\\s*:|['\"]visibleRevision['\"]\\s*:)[\\s\\S]{0,450}(?:hasReadableTray\\s*:|['\"]hasReadableTray['\"]\\s*:)",
+        "(?:(?:controls\\s*:|['\"]controls['\"]\\s*:)\\s*\\{|function\\s+controls\\s*\\([^)]*\\)\\s*\\{[\\s\\S]{0,350}return\\s+\\{)[\\s\\S]{0,1000}(?:start\\s*:|['\"]start['\"]\\s*:)[\\s\\S]{0,350}(?:reset\\s*:|['\"]reset['\"]\\s*:)[\\s\\S]{0,350}(?:hint\\s*:|['\"]hint['\"]\\s*:)",
+        "(?:feedback\\s*:|['\"]feedback['\"]\\s*:)\\s*\\{[\\s\\S]{0,1200}(?:lastPlacement\\s*:|['\"]lastPlacement['\"]\\s*:)[\\s\\S]{0,450}(?:successRevision\\s*:|['\"]successRevision['\"]\\s*:)[\\s\\S]{0,450}(?:errorRevision\\s*:|['\"]errorRevision['\"]\\s*:)",
+        "(?:lastAction\\s*:|['\"]lastAction['\"]\\s*:)\\s*\\{[\\s\\S]{0,800}(?:ok\\s*:|['\"]ok['\"]\\s*:)[\\s\\S]{0,300}(?:type\\s*:|['\"]type['\"]\\s*:)[\\s\\S]{0,300}(?:reason\\s*:|['\"]reason['\"]\\s*:)"
+      ],
+      "fix_hint": "Return the public Snapshot groups and fields declared by task/sortie/tdd.md."
+    },
+    {
+      "id": "p1-item-slot-summary-schema",
+      "level": "P1",
+      "name": "Snapshot item and slot summaries expose semantic centers, identity, state, target, and occupancy",
+      "type": "regex_all",
+      "patterns": [
+        "^(?=[\\s\\S]*(?:\\bitems\\s*[:=]|['\"]items['\"]\\s*:))(?=[\\s\\S]*(?:\\bid\\s*:|['\"]id['\"]\\s*:))(?=[\\s\\S]*(?:\\bstate\\s*:|['\"]state['\"]\\s*:))(?=[\\s\\S]*(?:\\blocked\\s*:|['\"]locked['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bitems\\s*[:=]|['\"]items['\"]\\s*:))(?=[\\s\\S]*(?:\\bscreenX\\s*:|['\"]screenX['\"]\\s*:))(?=[\\s\\S]*(?:\\bscreenY\\s*:|['\"]screenY['\"]\\s*:))(?=[\\s\\S]*(?:\\btargetSlotId\\s*:|['\"]targetSlotId['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bslots\\s*[:=]|['\"]slots['\"]\\s*:))(?=[\\s\\S]*(?:\\bid\\s*:|['\"]id['\"]\\s*:))(?=[\\s\\S]*(?:\\bscreenX\\s*:|['\"]screenX['\"]\\s*:))(?=[\\s\\S]*(?:\\boccupiedItemIds\\s*:|['\"]occupiedItemIds['\"]\\s*:))",
+        "^(?=[\\s\\S]*(?:\\bslots\\s*[:=]|['\"]slots['\"]\\s*:))(?=[\\s\\S]*(?:\\bcorrectItemId\\s*:|['\"]correctItemId['\"]\\s*:|\\btargetSlotId\\s*:))(?=[\\s\\S]*(?:\\bhighlighted\\s*:|['\"]highlighted['\"]\\s*:))"
+      ],
+      "fix_hint": "Expose portable semantic item and slot summaries, including viewport centers and target-slot relationships."
+    },
+    {
+      "id": "p1-player-action-envelope",
+      "level": "P1",
+      "name": "Input action schema recognizes player-level start, panel, drag, placement, reset, hint, and progression actions",
+      "type": "regex_all",
+      "patterns": [
+        "(?:action|input)\\s*\\.[\\s\\S]{0,160}(?:type)|(?:type\\s*[:=][\\s\\S]{0,900}(?:start|openLevelSelect|chooseLevel|closePanel|resetLevel))",
+        "(?:type\\s*[:=][\\s\\S]{0,1000}(?:requestHint|pointerDown|pointerMove|pointerUp|dragItemTo))",
+        "^(?=[\\s\\S]*(?:case\\s*[\"']nextLevel[\"']|\\bnextLevel\\s*:|[\"']nextLevel[\"']))(?=[\\s\\S]*(?:case\\s*[\"']retryLevel[\"']|\\bretryLevel\\s*:|[\"']retryLevel[\"']))(?=[\\s\\S]*(?:case\\s*[\"']wait[\"']|\\bwait\\s*:|[\"']wait[\"']))(?=[\\s\\S]*(?:\\binput\\b|\\bdispatch\\b|\\bhandleAction\\b|\\bperformAction\\b|\\bexecAction\\b|\\bActions\\b))[\\s\\S]*$",
+        "(?:lastAction|reason)\\s*[:=][\\s\\S]{0,1400}(?:invalidAction|notInteractable|lockedItem|invalidLevel|blockedByOverlay|noTarget|alreadyComplete)"
+      ],
+      "fix_hint": "Implement the TDD player-level action schema and stable rejection reasons."
+    },
+    {
+      "id": "p1-scenario-contract-enum",
+      "level": "P1",
+      "name": "loadScenario supports every legal TDD precondition name without pre-applying results",
+      "type": "regex_all",
+      "patterns": [
+        "^(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*(?:['\"]boot['\"]|\\bboot\\s*:))(?=[\\s\\S]*(?:['\"]level_start['\"]|\\blevel_start\\s*:))(?=[\\s\\S]*(?:['\"]wrong_choice_ready['\"]|\\bwrong_choice_ready\\s*:))",
+        "^(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*(?:['\"]outside_drop_ready['\"]|\\boutside_drop_ready\\s*:))(?=[\\s\\S]*(?:['\"]hint_ready['\"]|\\bhint_ready\\s*:))(?=[\\s\\S]*(?:['\"]level_select_ready['\"]|\\blevel_select_ready\\s*:))",
+        "^(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*(?:['\"]final_p1_level_start['\"]|\\bfinal_p1_level_start\\s*:))(?=[\\s\\S]*(?:['\"]editor_available['\"]|\\beditor_available\\s*:))[\\s\\S]*"
+      ],
+      "fix_hint": "Support all TDD scenario names as legal preconditions only."
+    },
+    {
+      "id": "p1-completion-score-contract",
+      "level": "P1",
+      "name": "Snapshot exposes progress, score, completion, hint, and visible feedback invariants",
+      "type": "regex_all",
+      "patterns": [
+        "(?:score\\s*:|['\"]score['\"]\\s*:)\\s*\\{[\\s\\S]{0,1000}(?:value\\s*:|['\"]value['\"]\\s*:)[\\s\\S]{0,350}(?:combo\\s*:|['\"]combo['\"]\\s*:)[\\s\\S]{0,350}(?:longestCombo\\s*:|['\"]longestCombo['\"]\\s*:)",
+        "(?:(?:completion\\s*:|['\"]completion['\"]\\s*:)[\\s\\S]{0,2200}(?:result\\s*:|['\"]result['\"]\\s*:)[\\s\\S]{0,350}(?:panelVisible\\s*:|['\"]panelVisible['\"]\\s*:)[\\s\\S]{0,350}(?:canGoNext\\s*:|['\"]canGoNext['\"]\\s*:)[\\s\\S]{0,350}(?:canRetry\\s*:|['\"]canRetry['\"]\\s*:)|(?:result\\s*:|['\"]result['\"]\\s*:)[\\s\\S]{0,2200}(?:panelVisible\\s*:|['\"]panelVisible['\"]\\s*:)[\\s\\S]{0,350}(?:canGoNext\\s*:|['\"]canGoNext['\"]\\s*:)[\\s\\S]{0,350}(?:canRetry\\s*:|['\"]canRetry['\"]\\s*:)[\\s\\S]{0,2200}(?:completion\\s*:|['\"]completion['\"]\\s*:))",
+        "(?:hint\\s*:|['\"]hint['\"]\\s*:)\\s*\\{[\\s\\S]{0,900}(?:active\\s*:|['\"]active['\"]\\s*:)[\\s\\S]{0,300}(?:highlightedSlotId\\s*:|['\"]highlightedSlotId['\"]\\s*:)[\\s\\S]{0,300}(?:stackCount\\s*:|['\"]stackCount['\"]\\s*:)"
+      ],
+      "fix_hint": "Expose the TDD score, completion, hint, and feedback summary envelopes."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

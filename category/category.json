@@ -1,0 +1,237 @@
+{
+  "ancient-beast": {
+    "genre": "Turn-based Strategy (TBS)",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "armor-alley": {
+    "genre": "Real Time Strategy (RTS)",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "asmr-sparkle-shine": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "astroman": {
+    "genre": "Hack and Slash/ Beat em' up",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "barbie-and-kens-puzzles": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "barbies-pink-dream-wardrobe": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "bikini-bottom-survivor": {
+    "genre": "Arcade",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "capys-flight-adventure": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "city-racer-x-neon-rush": {
+    "genre": "Racing",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "city-rider": {
+    "genre": "Racing",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "color-palette": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "colossal-runner": {
+    "genre": "Platform",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "cupid-s-tie-dye-studio": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "diner-dasher": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "dirtbike": {
+    "genre": "Racing",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "dragon-ball-merge-heroes": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "fast-food-tycoon": {
+    "genre": "Simulator",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "frosting-frenzy": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "fruit-smoothie-merge": {
+    "genre": "Puzzle",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "garden-gulp": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "grand-theft-astro": {
+    "genre": "Shooter",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "grow-a-fish": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "gungategang": {
+    "genre": "Shooter",
+    "dimension": "3D",
+    "tech": "Phaser 3"
+  },
+  "impact-pong": {
+    "genre": "Sport",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "infinite-charms": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "kick-skills": {
+    "genre": "Sport",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "knife-blitz-2": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "lucky-tran-s-apartment-glow-up": {
+    "genre": "Simulator",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "mini-tanks": {
+    "genre": "Strategy",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "neon-flow-circuit-connect": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "park-master": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "park-pal": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "penalty-king": {
+    "genre": "Sport",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "perfecto-shot": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "slice-rush": {
+    "genre": "Platform",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "smash-the-dummy": {
+    "genre": "Arcade",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "sortie": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "spider-kid-s-halloween-haul": {
+    "genre": "Platform",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "stickman-anchor": {
+    "genre": "Shooter",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "stickman-archer": {
+    "genre": "Shooter",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "super-screw": {
+    "genre": "Puzzle",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "tadpol-io": {
+    "genre": "Arcade",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "tankor-arena": {
+    "genre": "Shooter",
+    "dimension": "3D",
+    "tech": "Three.js"
+  },
+  "tap-tap-shots": {
+    "genre": "Sport",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "the-daughter-of-the-sea-before-the-foam": {
+    "genre": "Visual Novel",
+    "dimension": "2D",
+    "tech": "DOM"
+  },
+  "turbo-smash-beast": {
+    "genre": "Racing",
+    "dimension": "2D",
+    "tech": "Canvas 2D"
+  },
+  "william-afton-life": {
+    "genre": "Hack and Slash/ Beat em' up",
+    "dimension": "3D",
+    "tech": "Three.js"
+  }
+}

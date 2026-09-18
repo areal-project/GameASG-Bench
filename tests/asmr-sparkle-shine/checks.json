@@ -1,0 +1,82 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "asmr-sparkle-shine",
+  "_source": "task/asmr-sparkle-shine/tdd.md",
+  "_scope": "L1 checks only TDD-defined public interface functions. Gameplay behavior is tested by L2 checks.js.",
+  "_contract_methods": [
+    "reset",
+    "input",
+    "getSnapshot",
+    "loadScenario"
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[[\"\\']__gameTest[\"\\']\\])\\s*="
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-contract-method-reset",
+      "level": "P0",
+      "name": "TDD contract method reset is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\breset\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.reset as defined by task/asmr-sparkle-shine/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-input",
+      "level": "P0",
+      "name": "TDD contract method input is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\binput\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.input as defined by task/asmr-sparkle-shine/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-getSnapshot",
+      "level": "P0",
+      "name": "TDD contract method getSnapshot is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\bgetSnapshot\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.getSnapshot as defined by task/asmr-sparkle-shine/tdd.md."
+    },
+    {
+      "id": "p0-contract-method-loadScenario",
+      "level": "P0",
+      "name": "TDD contract method loadScenario is present",
+      "type": "regex_all",
+      "patterns": [
+        "__gameTest",
+        "\\bloadScenario\\s*(?:\\(|:)"
+      ],
+      "fix_hint": "Implement window.__gameTest.loadScenario as defined by task/asmr-sparkle-shine/tdd.md."
+    },
+    {
+      "id": "p0-single-index-inline-output",
+      "level": "P0",
+      "name": "Runnable output is a single inline index.html without local runtime companions",
+      "type": "regex_none",
+      "patterns": [
+        "<script\\b[^>]*\\bsrc\\s*=\\s*[\"']\\s*(?:\\./|/|[^\"']*(?:\\.js|\\.mjs))",
+        "<link\\b[^>]*\\brel\\s*=\\s*[\"']stylesheet[\"'][^>]*\\bhref\\s*=\\s*[\"']\\s*(?:\\./|/|[^\"']*\\.css)",
+        "\\b(?:import\\s+[^;]*\\s+from\\s*[\"']\\s*\\./|import\\s*\\(\\s*[\"']\\s*\\./)"
+      ],
+      "fix_hint": "Place all first-party CSS and JavaScript inline in /envarena/workspace/index.html; do not reference local game.js/state.js/render.js/style.css files."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

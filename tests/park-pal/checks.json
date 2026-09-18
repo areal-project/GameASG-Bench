@@ -1,0 +1,173 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "park-pal",
+  "_source": "task/park-pal/tdd.md",
+  "_scope": "L1 checks only verify the TDD public adapter contract. Gameplay behavior, source structure, implementation internals, and source-specific DOM are intentionally left to L2 runtime checks.",
+  "_contract_methods": [
+    "reset",
+    "loadScenario",
+    "input",
+    "getSnapshot"
+  ],
+  "tool_checks": [
+    {
+      "id": "tool-html-runtime-shell",
+      "level": "P0",
+      "name": "HTML entry exposes a script runtime shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": ["html", "script"],
+      "fix_hint": "Keep the game entry as a script-bearing HTML document."
+    },
+    {
+      "id": "tool-html-js-syntax",
+      "level": "P0",
+      "name": "HTML entry JavaScript is syntactically valid",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Keep the game entry JavaScript syntactically valid."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-adapter-object",
+      "level": "P0",
+      "name": "TDD public adapter object is assigned on window/globalThis/self",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*="
+      ],
+      "fix_hint": "Expose the TDD-defined public adapter as window.__gameTest."
+    },
+    {
+      "id": "p0-public-adapter-method-set",
+      "level": "P0",
+      "name": "TDD adapter includes reset, loadScenario, input, and getSnapshot methods",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement the four public methods named in task/park-pal/tdd.md."
+    },
+    {
+      "id": "p1-snapshot-flow-overlay-contract",
+      "level": "P1",
+      "name": "Snapshot exposes phase, result, overlay, and playfield interaction contract",
+      "type": "regex_all",
+      "patterns": [
+        "\\bphase\\s*:",
+        "\\bresult\\s*:",
+        "\\bactiveOverlay\\s*:",
+        "overlayBlocking\\s*:",
+        "canInteractWithPlayfield\\s*:"
+      ],
+      "fix_hint": "Return TDD Snapshot flow and overlay fields with the documented enum values."
+    },
+    {
+      "id": "p1-snapshot-level-hud-playfield-contract",
+      "level": "P1",
+      "name": "Snapshot exposes level, HUD, and playfield summary envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "level\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\s*\\?\\s*\\{)[\\s\\S]{0,900}currentIndex[\\s\\S]{0,500}totalCount[\\s\\S]{0,500}unlockedCount[\\s\\S]{0,500}completedCount[\\s\\S]{0,500}gridSize",
+        "hud\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\s*\\?\\s*\\{)[\\s\\S]{0,900}moves[\\s\\S]{0,500}timeRemainingSec[\\s\\S]{0,500}timerRunning[\\s\\S]{0,500}score[\\s\\S]{0,500}stars[\\s\\S]{0,500}warning",
+        "playfield\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\s*\\?\\s*\\{)[\\s\\S]{0,900}ready[\\s\\S]{0,500}bounds[\\s\\S]{0,500}revision[\\s\\S]{0,500}visibleVehicleCount[\\s\\S]{0,500}remainingVehicleCount"
+      ],
+      "fix_hint": "Return level/hud/playfield envelopes exactly as stable public summaries, not private game objects."
+    },
+    {
+      "id": "p1-snapshot-vehicle-hit-target-contract",
+      "level": "P1",
+      "name": "Snapshot vehicle summaries include ids, grid position, direction, movement state, and screen hit targets",
+      "type": "regex_all",
+      "patterns": [
+        "\\bvehicles\\s*:",
+        "\\bvehicleId\\s*:",
+        "\\brow\\s*:",
+        "\\bcol\\s*:",
+        "\\bdirection\\s*:",
+        "\\bstate\\s*:",
+        "\\bcanMove\\s*:",
+        "\\bwillExitIfTapped\\s*:",
+        "(?:\\bscreen\\s*:|\\bscreen\\s*(?=\\s*[,}]))"
+      ],
+      "fix_hint": "Expose product-level vehicle summaries and semantic hit targets needed for real player input tests."
+    },
+    {
+      "id": "p1-action-schema-parking-player-operations",
+      "level": "P1",
+      "name": "Adapter input recognizes TDD player-level parking actions",
+      "type": "regex_all",
+      "patterns": [
+        "action\\s*\\.\\s*type|type\\s*=\\s*[A-Za-z_$][\\w$]*\\s*\\.\\s*type|(?:var|let|const)\\s+[A-Za-z_$][\\w$]*\\s*=\\s*[A-Za-z_$][\\w$]*(?:\\s*&&\\s*[A-Za-z_$][\\w$]*)?\\s*\\.\\s*type|switch\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*\\.\\s*type\\s*\\)",
+        "[\"']start[\"']",
+        "[\"']selectLevel[\"']",
+        "[\"']tapVehicle[\"']",
+        "[\"']tapAt[\"']",
+        "[\"']touchVehicle[\"']",
+        "[\"']hint[\"']",
+        "[\"']pause[\"']",
+        "[\"']restart[\"']",
+        "[\"']toggleSetting[\"']",
+        "[\"']wait[\"']"
+      ],
+      "fix_hint": "Implement TDD player-level actions rather than direct private setters or result mutation."
+    },
+    {
+      "id": "p1-scenario-contract-names",
+      "level": "P1",
+      "name": "loadScenario supports deterministic legal precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?:[lL]oadScenario[\\s\\S]{0,2000}(?:[\"']fresh_start[\"']|\\bfresh_start\\b(?=\\s*[:(,}]))|(?:[\"']fresh_start[\"']|\\bfresh_start\\b(?=\\s*[:(,}]))[\\s\\S]{0,2000}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,2200}(?:[\"']level_select_with_progress[\"']|\\blevel_select_with_progress\\b(?=\\s*[:(,}]))|(?:[\"']level_select_with_progress[\"']|\\blevel_select_with_progress\\b(?=\\s*[:(,}]))[\\s\\S]{0,2200}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,2400}(?:[\"']tutorial_level_start[\"']|\\btutorial_level_start\\b(?=\\s*[:(,}]))|(?:[\"']tutorial_level_start[\"']|\\btutorial_level_start\\b(?=\\s*[:(,}]))[\\s\\S]{0,2400}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,2600}(?:[\"']movable_vehicle_ready[\"']|\\bmovable_vehicle_ready\\b(?=\\s*[:(,}]))|(?:[\"']movable_vehicle_ready[\"']|\\bmovable_vehicle_ready\\b(?=\\s*[:(,}]))[\\s\\S]{0,2600}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,2800}(?:[\"']blocked_vehicle_ready[\"']|\\bblocked_vehicle_ready\\b(?=\\s*[:(,}]))|(?:[\"']blocked_vehicle_ready[\"']|\\bblocked_vehicle_ready\\b(?=\\s*[:(,}]))[\\s\\S]{0,2800}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,3000}(?:[\"']mixed_direction_ready[\"']|\\bmixed_direction_ready\\b(?=\\s*[:(,}]))|(?:[\"']mixed_direction_ready[\"']|\\bmixed_direction_ready\\b(?=\\s*[:(,}]))[\\s\\S]{0,3000}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,3200}(?:[\"']hint_available[\"']|\\bhint_available\\b(?=\\s*[:(,}]))|(?:[\"']hint_available[\"']|\\bhint_available\\b(?=\\s*[:(,}]))[\\s\\S]{0,3200}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,3400}(?:[\"']pause_ready[\"']|\\bpause_ready\\b(?=\\s*[:(,}]))|(?:[\"']pause_ready[\"']|\\bpause_ready\\b(?=\\s*[:(,}]))[\\s\\S]{0,3400}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,3600}(?:[\"']countdown_pressure[\"']|\\bcountdown_pressure\\b(?=\\s*[:(,}]))|(?:[\"']countdown_pressure[\"']|\\bcountdown_pressure\\b(?=\\s*[:(,}]))[\\s\\S]{0,3600}[lL]oadScenario)",
+        "(?:[lL]oadScenario[\\s\\S]{0,3800}(?:[\"']settings_ready[\"']|\\bsettings_ready\\b(?=\\s*[:(,}]))|(?:[\"']settings_ready[\"']|\\bsettings_ready\\b(?=\\s*[:(,}]))[\\s\\S]{0,3800}[lL]oadScenario)"
+      ],
+      "fix_hint": "Implement TDD loadScenario names as legal setup states, not pre-applied outcomes."
+    },
+    {
+      "id": "p1-last-action-result-envelope",
+      "level": "P1",
+      "name": "Adapter returns structured action outcome and rejection information",
+      "type": "regex_all",
+      "patterns": [
+        "\\blastAction\\s*:",
+        "\\bok\\s*:",
+        "\\boutcome\\s*:",
+        "(?:\\breason\\s*:|[,{]\\s*reason\\b|\\.\\s*reason\\s*=|\\[\\s*[\"']reason[\"']\\s*\\])"
+      ],
+      "fix_hint": "Return a Snapshot with lastAction.ok/outcome/reason for accepted and rejected player actions."
+    },
+    {
+      "id": "p2-progress-hint-settings-contract",
+      "level": "P2",
+      "name": "Snapshot includes progress, hint, and settings contract envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:hint\\s*:\\s*\\{[\\s\\S]{0,900}available[\\s\\S]{0,500}coolingDown[\\s\\S]{0,500}cooldownRemainingSec[\\s\\S]{0,500}highlightedVehicleId|(?:var|let|const)\\s+hint\\s*=\\s*\\{[\\s\\S]{0,900}available[\\s\\S]{0,500}coolingDown[\\s\\S]{0,500}cooldownRemainingSec[\\s\\S]{0,500}highlightedVehicleId[\\s\\S]{0,2500}(?:hint\\s*:\\s*hint\\b|hint\\s*,))",
+        "\\bprogress\\s*(?::|,)",
+        "\\blevels\\s*:",
+        "\\blevelIndex\\s*:",
+        "\\bunlocked\\s*:",
+        "\\bcompleted\\s*:",
+        "\\bbestMoves\\s*:",
+        "\\bbestScore\\s*:",
+        "\\bbestStars\\s*:",
+        "settings\\s*:\\s*\\{[\\s\\S]{0,700}musicEnabled[\\s\\S]{0,500}soundEnabled"
+      ],
+      "fix_hint": "Expose hint/progress/settings public envelopes named in the TDD."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

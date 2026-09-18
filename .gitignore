@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+.claude/
+.codex/
+
+# Generated artifacts
+/output/
+/logs/
+*.log

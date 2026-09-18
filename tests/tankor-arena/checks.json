@@ -1,0 +1,115 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "tankor-arena",
+  "_source": "task/tankor-arena/tdd.md",
+  "_scope": "L1 checks only the TDD-defined public interface contract. Gameplay behavior is covered by tests/tankor-arena/checks.js.",
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "target": "index.html",
+      "type": "regex_any",
+      "patterns": [
+        "(?:(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=|\\b(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*(?:typeof\\s+(?:window|globalThis|self)\\s*!==?\\s*[\"'][^\"']+[\"']\\s*\\?\\s*)?(?:window|globalThis|self)(?:\\s*(?::|\\|\\|)\\s*(?:window|globalThis|self))?\\s*;[\\s\\S]*?\\1\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*=)"
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-public-contract-methods",
+      "level": "P0",
+      "name": "TDD contract methods reset input getSnapshot and loadScenario are present",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement reset, input, getSnapshot, and loadScenario with the semantics declared in task/tankor-arena/tdd.md."
+    },
+    {
+      "id": "p1-snapshot-state-render-envelope",
+      "level": "P1",
+      "name": "Snapshot exposes state machine, interaction, render, and HUD envelopes",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:phase\\s*[:=]|[\"']phase[\"']\\s*:))(?=[\\s\\S]*(?:screen\\s*[:=]|[\"']screen[\"']\\s*:))(?=[\\s\\S]*(?:canInteractWithPlayfield\\s*[:=]|[\"']canInteractWithPlayfield[\"']\\s*:))(?=[\\s\\S]*(?:overlayBlocking\\s*[:=]|[\"']overlayBlocking[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:render\\s*[:=]|[\"']render[\"']\\s*:))(?=[\\s\\S]*(?:playfieldVisible\\s*[:=]|[\"']playfieldVisible[\"']\\s*:))(?=[\\s\\S]*(?:nonBlank\\s*[:=]|[\"']nonBlank[\"']\\s*:))(?=[\\s\\S]*(?:visualRevision\\s*[:=]|[\"']visualRevision[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:hud\\s*[:=]|[\"']hud[\"']\\s*:))(?=[\\s\\S]*(?:healthVisible\\s*[:=]|[\"']healthVisible[\"']\\s*:))(?=[\\s\\S]*(?:scoreVisible\\s*[:=]|[\"']scoreVisible[\"']\\s*:))(?=[\\s\\S]*(?:cooldownVisible\\s*[:=]|[\"']cooldownVisible[\"']\\s*:))"
+      ],
+      "fix_hint": "Return the TDD Snapshot state, interaction, render, and HUD summaries from getSnapshot/reset/input/loadScenario."
+    },
+    {
+      "id": "p1-player-weapon-entity-target-schema",
+      "level": "P1",
+      "name": "Snapshot exposes player movement, weapon, entity, and target summaries",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bplayer\\b\\s*[:=]|[\"']player[\"']\\s*:))(?=[\\s\\S]*(?:screenX\\s*[:=]|[\"']screenX[\"']\\s*:))(?=[\\s\\S]*(?:screenY\\s*[:=]|[\"']screenY[\"']\\s*:))(?=[\\s\\S]*(?:movingState\\s*[:=]|[\"']movingState[\"']\\s*:))(?=[\\s\\S]*(?:turningState\\s*[:=]|[\"']turningState[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:\\bweapon\\b\\s*[:=]|[\"']weapon[\"']\\s*:))(?=[\\s\\S]*(?:ready\\s*[:=]|[\"']ready[\"']\\s*:))(?=[\\s\\S]*(?:cooldownRatio\\s*[:=]|[\"']cooldownRatio[\"']\\s*:))(?=[\\s\\S]*(?:lastFireAccepted\\s*[:=]|[\"']lastFireAccepted[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:\\bentities\\b\\s*[:=]|[\"']entities[\"']\\s*:))(?=[\\s\\S]*(?:activeEnemyCount\\s*[:=]|[\"']activeEnemyCount[\"']\\s*:))(?=[\\s\\S]*(?:obstacleCount\\s*[:=]|[\"']obstacleCount[\"']\\s*:))(?=[\\s\\S]*(?:enemyMotionRevision\\s*[:=]|[\"']enemyMotionRevision[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:\\btargets\\b\\s*[:=]|[\"']targets[\"']\\s*:))(?=[\\s\\S]*(?:reticleVisible\\s*[:=]|[\"']reticleVisible[\"']\\s*:))(?=[\\s\\S]*(?:lockState\\s*[:=]|[\"']lockState[\"']\\s*:))(?=[\\s\\S]*(?:visibleTargets\\s*[:=]|[\"']visibleTargets[\"']\\s*:))"
+      ],
+      "fix_hint": "Expose stable semantic summaries for movement, firing, enemies, obstacles, and target/reticle observations."
+    },
+    {
+      "id": "p1-player-action-schema",
+      "level": "P1",
+      "name": "Input action schema recognizes TDD player-level controls",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:action\\s*\\.\\s*type|type\\s*[:=]))(?=[\\s\\S]*\\b(?:start|holdMove|releaseMove|tapMove|joystick)\\b)",
+        "(?:fire|holdFire|aimAt|toggleCamera|pause|resume|restart|wait|driveToward)",
+        "(?=[\\s\\S]*(?:[A-Za-z_$][\\w$]*\\s*\\.\\s*direction|direction\\s*[:=]|[\"']direction[\"']\\s*:))(?=[\\s\\S]*\\b(?:forward|backward|left|right)\\b)",
+        "(?=[\\s\\S]*(?:[A-Za-z_$][\\w$]*\\s*\\.\\s*target|target\\s*[:=]|[\"']target[\"']\\s*:))(?=[\\s\\S]*\\b(?:enemy|obstacle|powerup|arenaBoundary|openSpace)\\b)"
+      ],
+      "fix_hint": "Dispatch TDD player-level actions rather than internal/debug mutations."
+    },
+    {
+      "id": "p1-scenario-contract-enum",
+      "level": "P1",
+      "name": "loadScenario supports legal TDD precondition names",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*\\b(?:fresh_battle|mobile_controls_ready|aimable_enemy|aimable_obstacle|cooldown_ready)\\b)",
+        "(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*\\b(?:cooldown_recovering|enemy_pressure|near_obstacle|near_boundary|one_enemy_remaining)\\b)",
+        "(?=[\\s\\S]*\\bloadScenario\\b)(?=[\\s\\S]*\\b(?:higher_level|boss_battle|powerup_visible|paused_play)\\b)"
+      ],
+      "fix_hint": "Implement only legal, pre-outcome setup scenarios named in the TDD."
+    },
+    {
+      "id": "p1-result-rejection-envelope",
+      "level": "P1",
+      "name": "Invalid actions return rejection reason or unchanged-state event envelope",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:ok\\s*[:=]|[\"']ok[\"']\\s*:))(?=[\\s\\S]*(?:reason\\s*[:=]|[\"']reason[\"']\\s*:|lastEvent\\s*[:=]|[\"']lastEvent[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:lastEvent\\s*[:=]|[\"']lastEvent[\"']\\s*:))(?=[\\s\\S]*(?:type\\s*[:=]|[\"']type[\"']\\s*:))(?=[\\s\\S]*(?:accepted\\s*[:=]|[\"']accepted[\"']\\s*:))",
+        "(?:cooldown|paused|terminal|transition|notPlaying|invalidAction|unknown)"
+      ],
+      "fix_hint": "Rejected public inputs must not throw and must not mutate combat outcome fields."
+    },
+    {
+      "id": "p2-progress-powerup-records-schema",
+      "level": "P2",
+      "name": "Optional progress, powerup, and record fields use public contract summaries",
+      "target": "index.html",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:progress\\s*[:=]|[\"']progress[\"']\\s*:))(?=[\\s\\S]*(?:levelTransitionActive\\s*[:=]|[\"']levelTransitionActive[\"']\\s*:))(?=[\\s\\S]*(?:nextLevelAvailable\\s*[:=]|[\"']nextLevelAvailable[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:activePowerups\\s*[:=]|[\"']activePowerups[\"']\\s*:))(?=[\\s\\S]*\\b(?:speed|shield|repair|doubleCannon|stealth)\\b)",
+        "(?=[\\s\\S]*(?:result\\s*[:=]|[\"']result[\"']\\s*:))(?=[\\s\\S]*(?:restartAvailable\\s*[:=]|[\"']restartAvailable[\"']\\s*:))(?=[\\s\\S]*(?:leaderboardAvailable\\s*[:=]|[\"']leaderboardAvailable[\"']\\s*:))"
+      ],
+      "fix_hint": "When optional systems are present, expose bounded public summaries and keep restart available."
+    }
+  ],
+    "anti_patterns": [],
+  "proximity_checks": []
+}

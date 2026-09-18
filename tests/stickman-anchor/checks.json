@@ -1,0 +1,169 @@
+{
+  "version": "2.0-contract-only",
+  "_doc": "stickman-anchor L1 public TDD contract checks",
+  "_source": "task/stickman-anchor/tdd.md",
+  "_scope": "L1 checks only the public __gameTest contract, action schema, scenario enum, snapshot envelope, and rejection/invariant surfaces declared by TDD. Gameplay behavior is covered by checks.js.",
+  "_contract_methods": [
+    "reset",
+    "loadScenario",
+    "input",
+    "getSnapshot"
+  ],
+  "tool_checks": [
+    {
+      "id": "tool-html-entry-and-script",
+      "level": "P0",
+      "name": "HTML entry exposes a script-bearing game shell",
+      "type": "tool_check",
+      "tool": "html_structure",
+      "required_tags": [
+        "html",
+        "body",
+        "script"
+      ],
+      "fix_hint": "Provide an HTML game entry with executable JavaScript."
+    },
+    {
+      "id": "tool-javascript-syntax",
+      "level": "P0",
+      "name": "Inline and local JavaScript parses",
+      "type": "tool_check",
+      "tool": "node_syntax",
+      "fix_hint": "Fix JavaScript syntax errors in inline or local linked scripts."
+    },
+    {
+      "id": "tool-playable-script-not-empty",
+      "level": "P0",
+      "name": "Implementation script is not an empty shell",
+      "type": "tool_check",
+      "tool": "script_not_empty",
+      "min_length": 4000,
+      "fix_hint": "Implement the TDD public contract and playable behavior in executable script."
+    }
+  ],
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is assigned",
+      "type": "regex_any",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[\\s*[\"']__gameTest[\"']\\s*\\])\\s*="
+      ],
+      "fix_hint": "Expose the TDD-defined public contract object as window.__gameTest."
+    },
+    {
+      "id": "p0-contract-method-bundle",
+      "level": "P0",
+      "name": "Required public contract methods are implemented",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+reset\\s*\\(|\\breset\\s*\\([^)]*\\)\\s*\\{|\\breset\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\breset\\s*:|\\.\\s*reset\\s*=|['\\\"]reset['\\\"]\\s*:|\\breset\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+input\\s*\\(|\\binput\\s*\\([^)]*\\)\\s*\\{|\\binput\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\binput\\s*:|\\.\\s*input\\s*=|['\\\"]input['\\\"]\\s*:|\\binput\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+getSnapshot\\s*\\(|\\bgetSnapshot\\s*\\([^)]*\\)\\s*\\{|\\bgetSnapshot\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bgetSnapshot\\s*:|\\.\\s*getSnapshot\\s*=|['\\\"]getSnapshot['\\\"]\\s*:|\\bgetSnapshot\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))",
+        "(?:\\bfunction\\s+loadScenario\\s*\\(|\\bloadScenario\\s*\\([^)]*\\)\\s*\\{|\\bloadScenario\\s*:\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*\\b)|\\bloadScenario\\s*:|\\.\\s*loadScenario\\s*=|['\\\"]loadScenario['\\\"]\\s*:|\\bloadScenario\\s*=\\s*(?:async\\s*)?(?:function\\b|\\([^)]*\\)\\s*=>))"
+      ],
+      "fix_hint": "Implement reset(options), loadScenario(name, options), input(action), and getSnapshot()."
+    },
+    {
+      "id": "p1-action-schema-contract",
+      "level": "P1",
+      "name": "input(action) dispatches declared player-level action families",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*(?:\\bfunction\\s+[A-Za-z_$][\\w$]*[Ii]nput\\s*\\(|\\b[Ii]nput\\s*[:(]|\\.\\s*[Ii]nput\\s*=))(?=[\\s\\S]*\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)",
+        "(?:case\\s*[\"']startGame[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']startGame[\"']|[\"']startGame[\"']\\s*:)",
+        "(?=[\\s\\S]*(?:case\\s*[\"']openPanel[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']openPanel[\"']|[\"']openPanel[\"']\\s*:))(?=[\\s\\S]*(?:\\b(?:action|a|act|event|evt)\\s*\\.\\s*panel|\\bpanel\\s*[:=]))(?=[\\s\\S]*\\b(?:levelSelect|shop|settings|leaderboard)\\b)",
+        "(?=[\\s\\S]*(?:case\\s*[\"']selectLevel[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']selectLevel[\"']|[\"']selectLevel[\"']\\s*:))(?=[\\s\\S]*(?:\\b(?:action|a|act|event|evt)\\s*\\.\\s*levelRef|\\blevelRef\\s*[:=]))",
+        "(?=[\\s\\S]*(?:case\\s*[\"']aimStart[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']aimStart[\"']|[\"']aimStart[\"']\\s*:))(?=[\\s\\S]*(?:case\\s*[\"']aimMove[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']aimMove[\"']|[\"']aimMove[\"']\\s*:))(?=[\\s\\S]*(?:case\\s*[\"']aimRelease[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']aimRelease[\"']|[\"']aimRelease[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:case\\s*[\"']dragAimAndRelease[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']dragAimAndRelease[\"']|[\"']dragAimAndRelease[\"']\\s*:))(?=[\\s\\S]*(?:(?:\\b(?:action|a|act|d)\\s*\\.\\s*)(?:direction|targetRef|strength)|(?:direction|targetRef|strength)\\s*[:=]))",
+        "(?=[\\s\\S]*(?:case\\s*[\"']pause[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']pause[\"']|[\"']pause[\"']\\s*:))(?=[\\s\\S]*(?:case\\s*[\"']resume[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']resume[\"']|[\"']resume[\"']\\s*:))(?=[\\s\\S]*(?:case\\s*[\"']restart[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']restart[\"']|[\"']restart[\"']\\s*:))",
+        "(?=[\\s\\S]*(?:case\\s*[\"']shopAction[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']shopAction[\"']|[\"']shopAction[\"']\\s*:))(?=[\\s\\S]*(?:(?:\\b(?:action|a|act|event|evt)\\s*\\.\\s*)(?:kind|category|itemRef)|(?:kind|category|itemRef)\\s*[:=]))",
+        "(?=[\\s\\S]*(?:case\\s*[\"']wait[\"']|(?:\\b(?:type|t)\\b|\\b(?:action|a|act|event|evt)\\s*\\.\\s*type)\\s*===\\s*[\"']wait[\"']|[\"']wait[\"']\\s*:))(?=[\\s\\S]*(?:\\b(?:action|a|act|event|evt)\\s*\\.\\s*durationMs|\\bdurationMs\\s*[:=]))"
+      ],
+      "fix_hint": "Implement __gameTest.input(action) with the TDD player-level action types and semantic fields."
+    },
+    {
+      "id": "p1-scenario-loader-legal-preconditions",
+      "level": "P1",
+      "name": "loadScenario(name) supports legal TDD precondition names",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bfunction\\s+[A-Za-z_$][\\w$]*[Ll]oadScenario\\s*\\(|\\b[Ll]oadScenario\\s*[:(])[^}]{0,12000}\\bname\\b",
+        "(?:[\"']boot_fresh[\"']|\\bboot_fresh\\b\\s*:)",
+        "(?:[\"']level_select_mixed[\"']|\\blevel_select_mixed\\b\\s*:)",
+        "(?:[\"']combat_ready_basic[\"']|\\bcombat_ready_basic\\b\\s*:|(?=[\\s\\S]*\\bscenarioConfig\\s*\\(\\s*name\\b)(?=[\\s\\S]*\\bname\\.startsWith\\s*\\(\\s*[\"']combat_[\"']\\s*\\))(?=[\\s\\S]*\\bstartCombatFromConfig\\s*\\())",
+        "(?:[\"']combat_aim_direction[\"']|\\bcombat_aim_direction\\b\\s*:|(?=[\\s\\S]*\\bscenarioConfig\\s*\\(\\s*name\\b)(?=[\\s\\S]*\\bname\\.startsWith\\s*\\(\\s*[\"']combat_[\"']\\s*\\))(?=[\\s\\S]*\\bstartCombatFromConfig\\s*\\())",
+        "(?:[\"']combat_single_enemy[\"']|\\bcombat_single_enemy\\b\\s*:)",
+        "(?:[\"']combat_enemy_pressure[\"']|\\bcombat_enemy_pressure\\b\\s*:)",
+        "(?:[\"']combat_moving_platform[\"']|\\bcombat_moving_platform\\b\\s*:)",
+        "(?:[\"']combat_wave_queue[\"']|\\bcombat_wave_queue\\b\\s*:)",
+        "(?:[\"']combat_powerup_available[\"']|\\bcombat_powerup_available\\b\\s*:\\s*function[\\s\\S]{0,500}\\b(?:spawnBubble|powerUps\\s*=|powerUps\\s*\\.\\s*(?:push|add))|(?=[\\s\\S]*\\bscenarioConfig\\s*\\(\\s*name\\b)(?=[\\s\\S]*\\bname\\.startsWith\\s*\\(\\s*[\"']combat_[\"']\\s*\\))(?=[\\s\\S]*\\bpowerUps\\s*=))",
+        "(?:[\"']combat_protected_enemy[\"']|\\bcombat_protected_enemy\\b\\s*:)",
+        "(?:[\"']shop_affordable[\"']|\\bshop_affordable\\b\\s*:)",
+        "(?:[\"']shop_insufficient[\"']|\\bshop_insufficient\\b\\s*:)",
+        "(?:[\"']paused_from_combat[\"']|\\bpaused_from_combat\\b\\s*:)",
+        "(?:[\"']combat_victory_route_ready[\"']|\\bcombat_victory_route_ready\\b\\s*:)",
+        "(?:[\"']combat_defeat_route_ready[\"']|\\bcombat_defeat_route_ready\\b\\s*:)"
+      ],
+      "fix_hint": "Support the TDD scenario names as legal preconditions without pre-applying damage, collection, purchase, victory, or failure."
+    },
+    {
+      "id": "p1-snapshot-state-and-playfield-envelope",
+      "level": "P1",
+      "name": "Snapshot exposes state machine and playfield observability envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?:\\bgetSnapshot\\b|\\bbuildSnapshot\\b|\\bapiGetSnapshot\\b|\\bsnapshot\\b)[\\s\\S]{0,14000}\\bready\\s*(?::|(?=[,}]))[\\s\\S]{0,14000}\\bphase\\s*(?::|(?=[,}]))[\\s\\S]{0,14000}\\bscreen\\s*(?::|(?=[,}]))",
+        "(?:\\bgetSnapshot\\b|\\bbuildSnapshot\\b|\\bapiGetSnapshot\\b|\\bsnapshot\\b)[\\s\\S]{0,14000}\\bactivePanel\\s*(?::|(?=[,}]))[\\s\\S]{0,14000}\\boverlayBlocking\\s*(?::|(?=[,}]))[\\s\\S]{0,14000}\\bcanInteractWithPlayfield\\s*(?::|(?=[,}]))",
+        "(?:\\bplayfield\\s*:\\s*\\{|\\b(?:var|let|const)\\s+playfield\\s*=\\s*\\{)[\\s\\S]{0,2000}\\bvisible\\s*(?::|(?=[,}]))[\\s\\S]{0,2000}\\bnonBlank\\s*(?::|(?=[,}]))[\\s\\S]{0,2000}\\brevision\\s*(?::|(?=[,}]))[\\s\\S]{0,2000}\\bbounds\\s*(?::|(?=[,}]))",
+        "(?=[\\s\\S]*\\blastAction\\b)(?=[\\s\\S]*\\bok\\s*[:=])(?=[\\s\\S]*\\btype\\s*[:=])"
+      ],
+      "fix_hint": "Return the TDD Snapshot state, blocking, playfield, bounds, and lastAction envelopes."
+    },
+    {
+      "id": "p1-combat-snapshot-contract",
+      "level": "P1",
+      "name": "Snapshot exposes aim, projectile, enemy, combat, platform, and power-up summaries",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*\\bplayer\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\balive\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bhealth\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\baim\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bangleCategory\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bpreviewRevision\\s*(?::|(?=[,}])))",
+        "(?=[\\s\\S]*\\benemies\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\balive\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bspawnedAlive\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bqueued\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\btargetZones\\s*(?::|=|(?=[,}])))",
+        "(?=[\\s\\S]*\\bprojectiles\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bplayerActive\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\benemyActive\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bplayerFiredRevision\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\blastPlayerShot\\s*(?::|=|(?=[,}])))",
+        "(?=[\\s\\S]*\\bcombat\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bcooldownReady\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bhitRevision\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bheadshotRevision\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bterminalInputBlocked\\s*(?::|(?=[,}])))",
+        "(?=[\\s\\S]*\\bplatforms\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bmovingCount\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\bmotionRevision\\s*(?::|(?=[,}])))(?=[\\s\\S]*\\benemyCarriedRevision\\s*(?::|(?=[,}])))",
+        "(?=[\\s\\S]*\\bpowerUps\\s*:)(?=[\\s\\S]*\\bheldType\\s*:)(?=[\\s\\S]*\\bcharges\\s*:)(?=[\\s\\S]*\\bcollectionRevision\\s*:)(?=[\\s\\S]*\\beffectRevision\\s*:)"
+      ],
+      "fix_hint": "Expose the TDD combat summaries needed for aim, projectile, enemy, platform, and power-up behavior checks."
+    },
+    {
+      "id": "p1-progress-shop-result-contract",
+      "level": "P1",
+      "name": "Snapshot exposes progression, shop, result, and HUD synchronization envelopes",
+      "type": "regex_all",
+      "patterns": [
+        "(?=[\\s\\S]*\\b(?:getSnapshot|buildSnapshot|snapshot|apiGetSnapshot)\\s*\\([^)]*\\)[\\s\\S]{0,16000}\\blevel\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\b))(?=[\\s\\S]*\\bcurrentRef\\s*(?::|[,}]))(?=[\\s\\S]*\\bunlockedCount\\s*(?::|[,}]))(?=[\\s\\S]*\\bselectedUnlocked\\s*(?::|[,}]))(?=[\\s\\S]*\\bbestStarsForCurrent\\s*(?::|[,}]))",
+        "(?=[\\s\\S]*\\b(?:getSnapshot|buildSnapshot|snapshot|apiGetSnapshot)\\s*\\([^)]*\\)[\\s\\S]{0,16000}\\bprogress\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\b))(?=[\\s\\S]*\\bcoins\\s*(?::|[,}]))(?=[\\s\\S]*\\btotalStars\\s*(?::|[,}]))(?=[\\s\\S]*\\bbestStarsByLevel\\s*(?::|[,}]))(?=[\\s\\S]*\\bsettings\\s*(?::|[,}]))",
+        "(?=[\\s\\S]*\\bshop\\s*:)(?=[\\s\\S]*\\bvisible\\s*:)(?=[\\s\\S]*\\bcategories\\s*:)(?=[\\s\\S]*\\bitems\\s*:)(?=[\\s\\S]*\\bprice\\s*:)",
+        "(?=[\\s\\S]*\\b(?:getSnapshot|buildSnapshot|snapshot|apiGetSnapshot)\\s*\\([^)]*\\)[\\s\\S]{0,16000}\\bresult\\s*:\\s*(?:\\{|[A-Za-z_$][\\w$]*\\b))(?=[\\s\\S]*\\btype\\s*(?::|[,}]))(?=[\\s\\S]*\\bvisible\\s*(?::|[,}]))(?=[\\s\\S]*\\bstars\\s*(?::|[,}]))(?=[\\s\\S]*\\bcoinsAwarded\\s*(?::|[,}]))",
+        "\\bobservability\\s*:\\s*\\{[\\s\\S]{0,2400}\\bhudRevision\\s*:[\\s\\S]{0,2400}\\bresultRevision\\s*:[\\s\\S]{0,2400}\\bworldMotionRevision\\s*:[\\s\\S]{0,2400}\\bvisibleFeedbackRevision\\s*:"
+      ],
+      "fix_hint": "Return TDD progression, shop, result, and visible synchronization summaries."
+    },
+    {
+      "id": "p1-rejection-and-invariant-contract",
+      "level": "P1",
+      "name": "Public contract represents rejection reasons and non-negative invariants",
+      "type": "regex_all",
+      "patterns": [
+        "(?:(?:lastAction\\s*[:=]\\s*\\{[\\s\\S]{0,1200}ok\\s*[:=]\\s*false|ok\\s*[:=]\\s*false[\\s\\S]{0,1200}reason\\s*[:=])|(?=[\\s\\S]*\\blastAction\\b)(?:setLast|setLastAction|reject)\\s*\\(\\s*false\\s*,[\\s\\S]{0,1200}(?:reason|\\x22|'))",
+        "(?:locked|cooldown|paused|terminal|insufficient|unavailable|invalid|blocked)",
+        "(?:Math\\.max\\s*\\(\\s*0\\s*,[^)]*(?:coins|health|charges)|(?:coins|health|charges)\\s*=\\s*Math\\.max\\s*\\(\\s*0)",
+        "(?:(?:terminalInputBlocked|canInteractWithPlayfield)\\s*[:=][\\s\\S]{0,3000}(?:playerFiredRevision|damageRevision|coinsAwarded)\\s*[:=]|(?:playerFiredRevision|damageRevision|coinsAwarded)\\s*[:=][\\s\\S]{0,3000}(?:terminalInputBlocked|canInteractWithPlayfield)\\s*[:=])"
+      ],
+      "fix_hint": "Invalid actions must be rejected or no-op, and numeric public resources must stay non-negative."
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}

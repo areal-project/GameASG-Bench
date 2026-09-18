@@ -1,0 +1,57 @@
+{
+  "version": "2.0-contract-only",
+  "checks": [
+    {
+      "id": "p0-public-contract-object",
+      "level": "P0",
+      "name": "TDD public contract object is exposed",
+      "type": "regex_any",
+      "fix_hint": "Expose window.__gameTest as the public TDD adapter with reset, input, getSnapshot, and loadScenario methods.",
+      "patterns": [
+        "(?:window|globalThis|self)\\s*(?:\\.\\s*__gameTest|\\[[\"']__gameTest[\"']\\])\\s*="
+      ]
+    },
+    {
+      "id": "p0-public-contract-reset",
+      "level": "P0",
+      "name": "Public contract exposes reset",
+      "type": "regex_any",
+      "fix_hint": "Implement __gameTest.reset(options?) to reset the match and return a stable public snapshot.",
+      "patterns": [
+        "\\b(?:function\\s+reset\\s*\\(|reset\\s*[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*)|reset\\s*\\([^)]*\\)\\s*\\{)"
+      ]
+    },
+    {
+      "id": "p0-public-contract-input",
+      "level": "P0",
+      "name": "Public contract exposes input",
+      "type": "regex_any",
+      "fix_hint": "Implement __gameTest.input(action) to dispatch TDD player-level actions without bypassing gameplay rules.",
+      "patterns": [
+        "\\b(?:function\\s+input\\s*\\(|input\\s*[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*)|input\\s*\\([^)]*\\)\\s*\\{)"
+      ]
+    },
+    {
+      "id": "p0-public-contract-getSnapshot",
+      "level": "P0",
+      "name": "Public contract exposes getSnapshot",
+      "type": "regex_any",
+      "fix_hint": "Implement __gameTest.getSnapshot() with the stable observable state envelope required by the TDD.",
+      "patterns": [
+        "\\b(?:function\\s+getSnapshot\\s*\\(|getSnapshot\\s*[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*)|getSnapshot\\s*\\([^)]*\\)\\s*\\{)"
+      ]
+    },
+    {
+      "id": "p0-public-contract-loadScenario",
+      "level": "P0",
+      "name": "Public contract exposes loadScenario",
+      "type": "regex_any",
+      "fix_hint": "Implement __gameTest.loadScenario(name, options?) for legal preconditions without pre-applying outcomes.",
+      "patterns": [
+        "\\b(?:function\\s+loadScenario\\s*\\(|loadScenario\\s*[:=]\\s*(?:async\\s*)?(?:function|\\([^)]*\\)\\s*=>|[A-Za-z_$][\\w$]*)|loadScenario\\s*\\([^)]*\\)\\s*\\{)"
+      ]
+    }
+  ],
+  "anti_patterns": [],
+  "proximity_checks": []
+}
